@@ -13,4 +13,8 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
+  login() {
+    // Agrega tu lógica de login aquí
+    console.log('Botón de login presionado');
+  }
 }
