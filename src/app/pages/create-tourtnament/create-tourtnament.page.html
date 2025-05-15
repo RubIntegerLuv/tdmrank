@@ -1,0 +1,66 @@
+<ion-menu side="end" menuId="main-menu" contentId="main-content" class="custom-menu" type="overlay">
+  <ion-header>
+    <ion-toolbar color="#67092B">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-list>
+      <ion-item button>
+        Crear Torneo
+      </ion-item>
+      <ion-item button (click)="logout()">
+        Cerrar Sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content id="main-content">
+  <div class="main-container">
+
+    <div class="header">
+      <img src="assets/icon/icon_app_only_letter.png" alt="TDM Rank Logo" class="logo" />
+      <ion-buttons slot="end">
+        <ion-menu-button autoHide="false" class="menu-button"></ion-menu-button>
+      </ion-buttons>
+    </div>
+
+    <div class="content-container">
+      <div class="form-container">
+
+        <ion-item lines="none" class="custom-input">
+          <ion-input type="text" placeholder="Nombre del Torneo"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="custom-input">
+          <ion-input type="number" placeholder="Cantidad de jugadores"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="custom-input">
+          <ion-select placeholder="Jugadores por grupo">
+            <ion-select-option value="2">2</ion-select-option>
+            <ion-select-option value="3">3</ion-select-option>
+            <ion-select-option value="4">4</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none" class="custom-input">
+          <ion-select placeholder="Tipo de torneo">
+            <ion-select-option value="elimination">Eliminación</ion-select-option>
+            <ion-select-option value="round-robin">Round Robin</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="none" class="custom-input">
+          <ion-datetime placeholder="Fecha y hora"></ion-datetime>
+        </ion-item>
+
+        <ion-button expand="block" class="crear-torneo">Crear Torneo</ion-button>
+
+      </div>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,91 @@
+ion-content#main-content {
+  --background: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+  height: 100vh;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0; /* padding 0 como en el primer bloque */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px; /* padding completo */
+  width: 100%; /* ancho 100% */
+  background-color: #A20E43;
+  color: white;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+}
+
+.menu-button {
+  --background: transparent;
+  --box-shadow: none;
+  --color: #67092B;
+  font-size: 24px;
+}
+
+.content-container {
+  flex: 1;
+  background-color: #f4f4f4;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  padding: 24px 0;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+
+.form-container {
+  background: #f4f4f4;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+ion-item.custom-input {
+  --inner-padding-end: 0;
+  --border-style: none;
+  --background: #e0e0e0;
+  border-radius: 4px;
+}
+
+.custom-input ion-input,
+.custom-input ion-select,
+.custom-input ion-datetime {
+  --color: #333;
+  padding: 10px;
+}
+
+.crear-torneo {
+  --background: #A20E43;
+  --color: white;
+  --border-radius: 8px;
+  --box-shadow: none;
+  height: 40px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.crear-torneo:hover {
+  --background: #7a0a2e;
+}
+
+/* menú personalizado */
+.custom-menu {
+  --width: 60vw;
+  --background: #A20E43;
+}

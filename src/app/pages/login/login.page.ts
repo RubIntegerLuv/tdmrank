@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -8,13 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) {}
 
   ngOnInit() {
   }
 
   login() {
-    // Agrega tu lógica de login aquí
     console.log('Botón de login presionado');
+    this.router.navigate(['/home']);  // Cambia '/login' por la ruta real si es diferente
+  }
+  RegisterPage(){
+    console.log('Botón de register presionado');
+    this.router.navigate(['register']);
   }
 }
