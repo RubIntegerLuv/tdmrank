@@ -5,29 +5,36 @@
       <img src="assets/icon/icon_app_only_letter.png" alt="TDM Rank Logo" class="logo" />
     </div>
 
-    <div class="form-container">
+    <form [formGroup]="registerForm" (ngSubmit)="registrar()" class="form-container">
+
       <ion-item lines="none" class="custom-input">
-        <ion-input type="name" placeholder="Nombre"></ion-input>
+        <ion-input formControlName="nombre" type="text" placeholder="Nombre"></ion-input>
       </ion-item>
 
       <ion-item lines="none" class="custom-input">
-        <ion-input type="lastName" placeholder="Apellido"></ion-input>
+        <ion-input formControlName="apellido" type="text" placeholder="Apellido"></ion-input>
       </ion-item>
 
       <ion-item lines="none" class="custom-input">
-        <ion-input type="email" placeholder="Email"></ion-input>
+        <ion-input formControlName="email" type="email" placeholder="Email"></ion-input>
       </ion-item>
 
       <ion-item lines="none" class="custom-input">
-        <ion-input type="password" placeholder="Password"></ion-input>
+        <ion-input formControlName="password" type="password" placeholder="Contraseña"></ion-input>
       </ion-item>
 
       <ion-item lines="none" class="custom-input">
-        <ion-input type="confirmPassword" placeholder="Confirmar contraseña"></ion-input>
+        <ion-label>Tipo de usuario</ion-label>
+        <ion-select formControlName="tipoUsuario" interface="popover">
+          <ion-select-option value="jugador">Jugador</ion-select-option>
+          <ion-select-option value="administrador">Administrador</ion-select-option>
+          <ion-select-option value="arbitro">Árbitro</ion-select-option>
+        </ion-select>
       </ion-item>
 
-      <ion-button expand="block" class="login-button" (click)="register()">Register</ion-button>
-    </div>
+      <ion-button type="submit" expand="block">Registrar</ion-button>
+
+    </form>
 
   </div>
 </ion-content>

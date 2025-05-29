@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { LoginPage } from './login.page';
 
 @NgModule({
-  declarations: [LoginPage],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    ReactiveFormsModule,
     RouterModule.forChild([
       {
         path: '',
@@ -18,5 +18,6 @@ import { LoginPage } from './login.page';
       }
     ])
   ],
+  declarations: [LoginPage] // <-- Aquí debe estar
 })
 export class LoginPageModule {}
