@@ -18,6 +18,6 @@ import { LoginPage } from './login.page';
       }
     ])
   ],
-  declarations: [LoginPage] // <-- Aquí debe estar
+  declarations: [LoginPage]
 })
 export class LoginPageModule {}

@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content scroll="false">
   <div class="main-container">
 
     <div class="logo-container">
@@ -7,15 +7,36 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-container">
       <ion-item lines="none" class="custom-input">
-        <ion-input type="email" placeholder="Email" formControlName="email"></ion-input>
+        <ion-input
+          type="email"
+          placeholder="Email"
+          formControlName="email"
+          [class.invalid]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+        </ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">
+        <small *ngIf="loginForm.get('email')?.errors?.['required']">El email es obligatorio.</small>
+        <small *ngIf="loginForm.get('email')?.errors?.['email']">Email inválido.</small>
+      </div>
 
       <ion-item lines="none" class="custom-input">
-        <ion-input type="password" placeholder="Contraseña" formControlName="password"></ion-input>
+        <ion-input
+          type="password"
+          placeholder="Contraseña"
+          formControlName="password"
+          [class.invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+        </ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+        <small>La contraseña es obligatoria.</small>
+      </div>
 
-      <ion-button expand="block" class="login-button" type="submit">Ingresar</ion-button>
-      <ion-button expand="block" class="login-button" type="button" (click)="RegisterPage()">¿No tienes cuenta? Regístrate</ion-button>
+      <ion-button expand="block" class="login-button" type="submit" [disabled]="loginForm.invalid">
+        Ingresar
+      </ion-button>
+      <ion-button expand="block" class="login-button" type="button" (click)="RegisterPage()">
+        ¿No tienes cuenta? Regístrate
+      </ion-button>
     </form>
 
   </div>

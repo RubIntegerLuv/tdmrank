@@ -10,18 +10,36 @@
       <ion-item lines="none" class="custom-input">
         <ion-input formControlName="nombre" type="text" placeholder="Nombre"></ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.invalid">
+        <small *ngIf="registerForm.get('nombre')?.errors?.['required']">El nombre es obligatorio.</small>
+        <small *ngIf="registerForm.get('nombre')?.errors?.['pattern']">Nombre inválido (solo letras).</small>
+      </div>
 
       <ion-item lines="none" class="custom-input">
         <ion-input formControlName="apellido" type="text" placeholder="Apellido"></ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="registerForm.get('apellido')?.touched && registerForm.get('apellido')?.invalid">
+        <small *ngIf="registerForm.get('apellido')?.errors?.['required']">El apellido es obligatorio.</small>
+        <small *ngIf="registerForm.get('apellido')?.errors?.['pattern']">Apellido inválido (solo letras).</small>
+      </div>
 
       <ion-item lines="none" class="custom-input">
         <ion-input formControlName="email" type="email" placeholder="Email"></ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+        <small *ngIf="registerForm.get('email')?.errors?.['required']">El email es obligatorio.</small>
+        <small *ngIf="registerForm.get('email')?.errors?.['pattern']">Email inválido. Debe tener un dominio válido (ej: .com, .cl).</small>
+      </div>
 
       <ion-item lines="none" class="custom-input">
         <ion-input formControlName="password" type="password" placeholder="Contraseña"></ion-input>
       </ion-item>
+      <div class="error-msg" *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+        <small *ngIf="registerForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
+        <small *ngIf="registerForm.get('password')?.errors?.['pattern']">
+          La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.
+        </small>
+      </div>
 
       <ion-item lines="none" class="custom-input">
         <ion-label>Tipo de usuario</ion-label>
@@ -31,10 +49,12 @@
           <ion-select-option value="arbitro">Árbitro</ion-select-option>
         </ion-select>
       </ion-item>
+      <div class="error-msg" *ngIf="registerForm.get('tipoUsuario')?.touched && registerForm.get('tipoUsuario')?.invalid">
+        <small>Debes seleccionar un tipo de usuario.</small>
+      </div>
 
-      <ion-button type="submit" expand="block">Registrar</ion-button>
+      <ion-button type="submit" expand="block" [disabled]="registerForm.invalid">Registrar</ion-button>
 
     </form>
-
   </div>
 </ion-content>

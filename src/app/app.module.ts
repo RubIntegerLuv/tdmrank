@@ -17,7 +17,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
     // Ya NO agregues AngularFireModule, AngularFireAuthModule ni AngularFirestoreModule
   ],
   providers: [

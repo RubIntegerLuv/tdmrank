@@ -55,3 +55,10 @@ ion-item.custom-input {
   text-transform: capitalize;
   font-size: 14px;
 }
+
+.error-msg {
+  color: #f44336;
+  font-size: 12px;
+  margin: 0 16px 8px; /* ajusta para coincidir con tu padding horizontal */
+  font-weight: 500;
+}
