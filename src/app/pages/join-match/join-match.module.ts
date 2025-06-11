@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { JoinMatchPage } from './join-match.page';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { CreateTourtnamentPage } from './create-tourtnament.page';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -12,13 +12,8 @@ import { CreateTourtnamentPage } from './create-tourtnament.page';
     FormsModule,
     IonicModule,
     SharedModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: CreateTourtnamentPage
-      }
-    ])
+    RouterModule.forChild([{ path: '', component: JoinMatchPage }])
   ],
-  declarations: [CreateTourtnamentPage]
+  declarations: [JoinMatchPage]
 })
-export class CreateTourtnamentPageModule {}
+export class JoinMatchPageModule {}

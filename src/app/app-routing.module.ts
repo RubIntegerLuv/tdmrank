@@ -23,6 +23,18 @@ const routes: Routes = [
     path: 'home',
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
   },
+  {
+    path: 'create-match',
+    loadChildren: () => import('./pages/create-match/create-match.module').then( m => m.CreateMatchPageModule)
+  },
+  {
+    path: 'join-match',
+    loadChildren: () => import('./pages/join-match/join-match.module').then( m => m.JoinMatchPageModule)
+  },
+  {
+    path: 'partido/:id',
+    loadChildren: () => import('./pages/partido/partido.module').then( m => m.PartidoPageModule)
+  },
 ];
 
 @NgModule({

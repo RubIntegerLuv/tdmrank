@@ -1,14 +1,26 @@
-<ion-menu side="end" menuId="main-menu" contentId="main-content" class="custom-menu" type="overlay">
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
   <ion-header>
     <ion-toolbar color="#67092B">
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
-
   <ion-content>
     <ion-list>
-      <ion-item button (click)="createTourtnament()">
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'administrador'" (click)="createTourtnament()">
         Crear Torneo
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'arbitro'" (click)="createMatch()">
+        Crear Partido
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="joinMatch()">
+        Unirse a Partido
       </ion-item>
       <ion-item button (click)="logout()">
         Cerrar Sesión
@@ -18,16 +30,8 @@
 </ion-menu>
 
 <ion-content id="main-content">
-  <div class="main-container">
-    <div class="header">
-      <img src="assets/icon/icon_app_only_letter.png" alt="TDM Rank Logo" class="logo" />
-      <ion-buttons slot="end">
-        <ion-menu-button autoHide="false" class="menu-button"></ion-menu-button>
-      </ion-buttons>
-    </div>
-
+  <app-header></app-header>
     <div class="content-container">
       <!-- Contenido principal aquí -->
     </div>
-  </div>
 </ion-content>

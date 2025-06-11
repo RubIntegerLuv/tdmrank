@@ -1,6 +1,7 @@
-import { CreateTourtnamentPage } from './../create-tourtnament/create-tourtnament.page';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -10,15 +11,33 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements OnInit {
 
-  constructor(private router: Router) {}
+  usuario: any;
 
-  ngOnInit() {
+  constructor(private router: Router,
+    private authService: AuthService,
+    private menuCtrl: MenuController
+  ) {}
+
+  async ngOnInit() {
+    this.usuario = await this.authService.getCurrentUserData();
   }
 
-  logout() {
-    this.router.navigate(['/login']);
+  async logout() {
+    try {
+      await this.authService.logout();
+      await this.menuCtrl.close('main-menu');
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error cerrando sesión:', error);
+    }
   }
   createTourtnament() {
     this.router.navigate(['/create-tourtnament']);
+  }
+  createMatch() {
+    this.router.navigate(['/create-match']);
+  }
+  joinMatch() {
+    this.router.navigate(['/join-match']);
   }
 }

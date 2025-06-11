@@ -1,0 +1,127 @@
+.match-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.players-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 32px;
+}
+
+.player-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.player-name {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.sets-row {
+  display: flex;
+  gap: 8px;
+}
+
+.set-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ccc;
+  border: 2px solid #a20e43;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.set-circle.won {
+  background-color: #a20e43;
+}
+
+.points-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+.points {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.points-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.points-buttons ion-button {
+  min-width: 120px;
+  font-size: 1.1em;
+  --background: #a20e43;
+  --color: white;
+  --border-radius: 12px;
+}
+
+.winner-message {
+  margin-top: 32px;
+  font-size: 1.5em;
+  color: #a20e43;
+  font-weight: bold;
+}
+
+.points-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 18px;
+}
+
+.points-btn {
+  width: 90px;
+  height: 90px;
+  font-size: 2.5em;
+  font-weight: bold;
+  background: #DCD8D8;
+  border: 4px solid #A20E43;
+  border-radius: 20px;
+  color: #A20E43;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+
+.points-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.points-separator {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #A20E43;
+}
+
+.points-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}

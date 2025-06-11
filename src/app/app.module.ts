@@ -11,14 +11,15 @@ import { environment } from '../environments/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { NumberToArrayPipe } from './pipes/number-to-array.pipe';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent,],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    // Ya NO agregues AngularFireModule, AngularFireAuthModule ni AngularFirestoreModule
+    NumberToArrayPipe
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

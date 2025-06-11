@@ -1,0 +1,65 @@
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
+  <ion-header>
+    <ion-toolbar color="#67092B">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button (click)="goHome()">
+        Ir a Inicio
+      </ion-item>
+      <ion-item button (click)="logout()">
+        Cerrar Sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content id="main-content">
+  <app-header></app-header>
+  <div class="content-container">
+    <div class="form-container">
+      <ion-item lines="none" class="custom-input">
+        <ion-label position="floating">Tipo de partido</ion-label>
+        <ion-select [(ngModel)]="tipoPartido">
+          <ion-select-option value="individual">Individual</ion-select-option>
+          <ion-select-option value="dobles" disabled>Dobles (próximamente)</ion-select-option>
+        </ion-select>
+        <ion-item lines="none" class="custom-input">
+          <ion-label position="floating">Cantidad de sets</ion-label>
+          <ion-select [(ngModel)]="cantidadSets">
+            <ion-select-option [value]="3">3 sets</ion-select-option>
+            <ion-select-option [value]="5">5 sets</ion-select-option>
+            <ion-select-option [value]="7">7 sets</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-item>
+
+      <ion-button expand="block" (click)="crearPartido()">Crear Partido</ion-button>
+
+      <div *ngIf="codigoPartido">
+        <h2>Código de partido: <b>{{ codigoPartido }}</b></h2>
+        <ion-list>
+          <ion-list-header>Jugadores conectados</ion-list-header>
+          <ion-item *ngFor="let jugador of jugadores">
+            {{ jugador.nombre }}
+            <ion-button fill="clear" color="danger" slot="end" (click)="expulsarJugador(jugador.uid)">
+              Expulsar
+            </ion-button>
+          </ion-item>
+        </ion-list>
+        <ion-button expand="block" color="success" [disabled]="jugadores.length < 2" (click)="iniciarPartido()">
+          Empezar Partido
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

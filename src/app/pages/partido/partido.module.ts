@@ -3,22 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
+import { PartidoPage } from './partido.page';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { CreateTourtnamentPage } from './create-tourtnament.page';
+import { NumberToArrayPipe } from 'src/app/pipes/number-to-array.pipe';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    RouterModule.forChild([{ path: '', component: PartidoPage }]),
     SharedModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: CreateTourtnamentPage
-      }
-    ])
+    NumberToArrayPipe
   ],
-  declarations: [CreateTourtnamentPage]
+  declarations: [PartidoPage]
 })
-export class CreateTourtnamentPageModule {}
+export class PartidoPageModule {}

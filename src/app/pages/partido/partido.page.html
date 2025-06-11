@@ -1,0 +1,51 @@
+<ion-content>
+  <app-header></app-header>
+  <div class="match-container" *ngIf="partido">
+    <div class="players-row">
+      <!-- Jugador Izquierda -->
+      <div class="player-side">
+        <div class="player-name">{{ jugadores[lado[0]]?.nombre }}</div>
+        <div class="sets-row">
+          <span *ngFor="let s of setsGanados[0] | numberToArray" class="set-circle won"></span>
+          <span *ngFor="let s of emptySets[0]" class="set-circle"></span>
+        </div>
+      </div>
+      <!-- Puntos -->
+      <div class="points-row">
+        <div class="points-container">
+          <button
+            class="points-btn"
+            [disabled]="!esArbitro || ganador"
+            (click)="sumarPunto(0)">
+            {{ puntosActuales[0] }}
+          </button>
+          <span class="points-separator">-</span>
+          <button
+            class="points-btn"
+            [disabled]="!esArbitro || ganador"
+            (click)="sumarPunto(1)">
+            {{ puntosActuales[1] }}
+          </button>
+        </div>
+        <div *ngIf="esArbitro" class="points-actions">
+          <ion-button size="small" color="danger" (click)="restarPunto(0)">-1 {{ jugadores[lado[0]]?.nombre }}</ion-button>
+          <ion-button size="small" color="danger" (click)="restarPunto(1)">-1 {{ jugadores[lado[1]]?.nombre }}</ion-button>
+          <ion-button size="small" color="medium" (click)="deshacerUltimoPunto()" [disabled]="!historial.length">
+            Deshacer último punto
+          </ion-button>
+        </div>
+      </div>
+      <!-- Jugador Derecha -->
+      <div class="player-side">
+        <div class="player-name">{{ jugadores[lado[1]]?.nombre }}</div>
+        <div class="sets-row">
+          <span *ngFor="let s of setsGanados[1] | numberToArray" class="set-circle won"></span>
+          <span *ngFor="let s of emptySets[1]" class="set-circle"></span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="ganador" class="winner-message">
+      ¡{{ ganador }} ha ganado el partido!
+    </div>
+  </div>
+</ion-content>

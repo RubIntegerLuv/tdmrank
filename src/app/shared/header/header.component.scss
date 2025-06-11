@@ -1,0 +1,20 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  width: 100%;
+  background-color: #A20E43;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+}
+
+.menu-button {
+  --background: transparent;
+  --box-shadow: none;
+  --color: #67092B;
+  font-size: 24px;
+}

@@ -1,0 +1,52 @@
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
+  <ion-header>
+    <ion-toolbar color="#67092B">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button (click)="goHome()">
+        Ir a Inicio
+      </ion-item>
+      <ion-item button (click)="logout()">
+        Cerrar Sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content>
+  <app-header></app-header>
+  <div class="content-container">
+    <div class="form-container">
+      <ion-item lines="none" class="custom-input">
+        <ion-input
+          type="text"
+          placeholder="Código del partido"
+          [(ngModel)]="codigoPartido"
+        ></ion-input>
+      </ion-item>
+      <ion-button expand="block" (click)="unirseAPartido()">
+        Unirse al partido
+      </ion-button>
+      <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
+    </div>
+    <div *ngIf="partidoEncontrado">
+      <h2>Esperando a que el árbitro inicie el partido...</h2>
+      <ion-list>
+        <ion-list-header>Jugadores conectados</ion-list-header>
+        <ion-item *ngFor="let jugador of jugadores">
+          {{ jugador.nombre }}
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

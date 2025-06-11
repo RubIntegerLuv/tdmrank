@@ -1,14 +1,20 @@
-<ion-menu side="end" menuId="main-menu" contentId="main-content" class="custom-menu" type="overlay">
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
   <ion-header>
     <ion-toolbar color="#67092B">
       <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
-
   <ion-content>
     <ion-list>
-      <ion-item button>
-        Crear Torneo
+      <ion-item button (click)="goHome()">
+        Ir a Inicio
       </ion-item>
       <ion-item button (click)="logout()">
         Cerrar Sesión
@@ -18,15 +24,7 @@
 </ion-menu>
 
 <ion-content id="main-content">
-  <div class="main-container">
-
-    <div class="header">
-      <img src="assets/icon/icon_app_only_letter.png" alt="TDM Rank Logo" class="logo" />
-      <ion-buttons slot="end">
-        <ion-menu-button autoHide="false" class="menu-button"></ion-menu-button>
-      </ion-buttons>
-    </div>
-
+  <app-header></app-header>
     <div class="content-container">
       <div class="form-container">
 
@@ -61,6 +59,4 @@
 
       </div>
     </div>
-
-  </div>
 </ion-content>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, UserCredential } from '@angular/fire/auth';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 import { User } from '../models/user.model';
 
 @Injectable({
@@ -26,6 +26,13 @@ export class AuthService {
       tipoUsuario: userData.tipoUsuario
     });
   }
+
+  async getCurrentUserData() {
+  const user = this.auth.currentUser;
+  if (!user) return null;
+  const userDoc = await getDoc(doc(this.firestore, `users/${user.uid}`));
+  return userDoc.exists() ? userDoc.data() : null;
+}
 
   logout(): Promise<void> {
     return this.auth.signOut();
