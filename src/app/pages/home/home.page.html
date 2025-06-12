@@ -22,6 +22,9 @@
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="joinMatch()">
         Unirse a Partido
       </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
+        Perfil
+      </ion-item>
       <ion-item button (click)="logout()">
         Cerrar Sesión
       </ion-item>
@@ -31,7 +34,28 @@
 
 <ion-content id="main-content">
   <app-header></app-header>
-    <div class="content-container">
-      <!-- Contenido principal aquí -->
+  <div class="content-container">
+    <div class="info-grid">
+      <div class="info-box">
+        <!-- Aquí puedes agregar noticias -->
+        <h2>Noticias</h2>
+        <p>Próximamente...</p>
+      </div>
+      <div class="info-box">
+        <!-- Aquí puedes agregar noticias -->
+        <h2>Noticias</h2>
+        <p>Próximamente...</p>
+      </div>
+      <div class="info-box">
+        <!-- Aquí puedes agregar ultimos torneos -->
+        <h2>Ultimo Torneo</h2>
+        <p>Próximamente...</p>
+      </div>
+      <div class="info-box">
+        <!-- Aquí puedes agregar el top 5 del ranking -->
+        <h2>Top 5 Ranking</h2>
+        <p>Próximamente...</p>
+      </div>
     </div>
+  </div>
 </ion-content>

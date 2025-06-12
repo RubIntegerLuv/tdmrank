@@ -35,6 +35,11 @@ const routes: Routes = [
     path: 'partido/:id',
     loadChildren: () => import('./pages/partido/partido.module').then( m => m.PartidoPageModule)
   },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule)
+  },
+
 ];
 
 @NgModule({

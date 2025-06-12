@@ -21,11 +21,14 @@
 
       <ion-item lines="none" class="custom-input">
         <ion-input
-          type="password"
+          [type]="showPassword ? 'text' : 'password'"
           placeholder="Contraseña"
           formControlName="password"
           [class.invalid]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
         </ion-input>
+        <ion-button fill="clear" slot="end" type="button" (click)="togglePasswordVisibility()">
+          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
       </ion-item>
       <div class="error-msg" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
         <small>La contraseña es obligatoria.</small>

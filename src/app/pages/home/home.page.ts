@@ -40,4 +40,7 @@ export class HomePage implements OnInit {
   joinMatch() {
     this.router.navigate(['/join-match']);
   }
+  goToPerfil() {
+    this.router.navigate(['/perfil']);
+  }
 }

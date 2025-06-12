@@ -1,0 +1,29 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="perfil-content">
+  <div class="perfil-container">
+    <div class="perfil-img-section">
+      <img [src]="urlImagenPerfil || 'assets/default-avatar.png'" class="perfil-img" alt="Foto de perfil">
+      <input type="file" accept="image/*" (change)="onFileSelected($event)">
+    </div>
+    <h2 class="perfil-nombre">{{ jugador?.nombre }}</h2>
+    <div class="perfil-stats">
+      <div class="stat-box">
+        <h3>Partidos Ganados</h3>
+        <p>{{ partidosGanados }}</p>
+      </div>
+      <div class="stat-box">
+        <h3>Torneos Ganados</h3>
+        <p>{{ torneosGanados }}</p>
+      </div>
+      <div class="stat-box">
+        <h3>% de Victorias</h3>
+        <p>{{ porcentajeVictorias }}%</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

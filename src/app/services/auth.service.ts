@@ -23,7 +23,8 @@ export class AuthService {
       nombre: userData.nombre,
       apellido: userData.apellido,
       email: userData.email,
-      tipoUsuario: userData.tipoUsuario
+      tipoUsuario: userData.tipoUsuario,
+      fotoURL: '' // <-- Aquí agregas el campo
     });
   }
 

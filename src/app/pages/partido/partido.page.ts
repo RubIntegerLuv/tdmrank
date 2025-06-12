@@ -23,6 +23,8 @@ export class PartidoPage implements OnInit {
   emptySets: any[][] = [[], []];
   historial: any[] = [];
 
+  private cambioLadoDecisivoRealizado: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private firestore: Firestore,
@@ -80,6 +82,7 @@ export class PartidoPage implements OnInit {
     let setsGanados = [...this.setsGanados];
     let lado = [...this.lado];
     let ganador: string | null = null;
+    let ganadorUid: string | null = null;
     let historial = [...this.historial];
 
     const maxPuntos = 11;
@@ -89,9 +92,20 @@ export class PartidoPage implements OnInit {
     const setDecisivo = (setsGanados[0] + setsGanados[1] + 1) === this.cantidadSets;
     const mitadSet = Math.floor(maxPuntos / 2);
 
-    // Cambio de lado en set decisivo al llegar a 5 puntos
-    if (setDecisivo && (puntos[0] === mitadSet || puntos[1] === mitadSet)) {
+    // Reinicia el flag al cambiar de set (excepto en deshacer)
+    if (!esDeshacer && setGanador !== -1) {
+      this.cambioLadoDecisivoRealizado = false;
+    }
+
+    // Cambio de lado en set decisivo al llegar a 5 puntos (solo una vez)
+    if (
+      setDecisivo &&
+      !this.cambioLadoDecisivoRealizado &&
+      (puntos[0] === mitadSet || puntos[1] === mitadSet)
+    ) {
       lado = [lado[1], lado[0]];
+      puntos = [puntos[1], puntos[0]];
+      this.cambioLadoDecisivoRealizado = true;
     }
 
     // Si alguien ganó el set
@@ -99,12 +113,20 @@ export class PartidoPage implements OnInit {
       setsGanados[setGanador]++;
       puntos = [0, 0];
       lado = [lado[1], lado[0]];
+      // Intercambiar setsGanados para que coincidan con el nuevo lado
+      setsGanados = [setsGanados[1], setsGanados[0]];
     }
 
     // ¿Alguien ganó el partido?
     const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
-    if (setsGanados[0] === setsParaGanar) ganador = this.jugadores[lado[0]].nombre;
-    if (setsGanados[1] === setsParaGanar) ganador = this.jugadores[lado[1]].nombre;
+    if (setsGanados[0] === setsParaGanar) {
+      ganador = this.jugadores[lado[0]].nombre;
+      ganadorUid = this.jugadores[lado[0]].uid;
+    }
+    if (setsGanados[1] === setsParaGanar) {
+      ganador = this.jugadores[lado[1]].nombre;
+      ganadorUid = this.jugadores[lado[1]].uid;
+    }
 
     // Historial para deshacer
     if (!esDeshacer && accion) {
@@ -120,6 +142,7 @@ export class PartidoPage implements OnInit {
       setsGanados: setsGanados,
       lado: lado,
       ganador: ganador,
+      ganadorUid: ganadorUid,
       historial: historial
     });
   }
