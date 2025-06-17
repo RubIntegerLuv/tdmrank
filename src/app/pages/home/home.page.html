@@ -22,9 +22,15 @@
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="joinMatch()">
         Unirse a Partido
       </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro'" (click)="joinTournament()">
+        Unirse a Torneo
+      </ion-item>
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
         Perfil
       </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro' || usuario?.tipoUsuario === 'administrador'" (click)="goToRanking()">
+        Ranking
+      </ion-item>s
       <ion-item button (click)="logout()">
         Cerrar Sesión
       </ion-item>

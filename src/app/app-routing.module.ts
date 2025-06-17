@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { TorneoPage } from './pages/torneo/torneo.page';
 
 const routes: Routes = [
   {
@@ -38,6 +39,17 @@ const routes: Routes = [
   {
     path: 'perfil',
     loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule)
+  },
+  {
+    path: 'join-tournament',
+    loadChildren: () => import('./pages/join-tournament/join-tournament.module').then( m => m.JoinTournamentPageModule)
+  },
+  {
+    path: 'torneo/:codigo',
+    loadChildren: () => import('./pages/torneo/torneo.module').then(m => m.TorneoPageModule)
+  },  {
+    path: 'ranking',
+    loadChildren: () => import('./pages/ranking/ranking.module').then( m => m.RankingPageModule)
   },
 
 ];

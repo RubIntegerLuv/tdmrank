@@ -43,4 +43,7 @@ export class HomePage implements OnInit {
   goToPerfil() {
     this.router.navigate(['/perfil']);
   }
+  joinTournament() {
+    this.router.navigate(['/join-tournament']);
+  }
 }
