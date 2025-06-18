@@ -1,0 +1,14 @@
+<ion-content>
+  <ion-segment [(ngModel)]="vistaSeleccionada" (ionChange)="cambiarVista($event)">
+    <ion-segment-button value="mis-partidos">
+      <ion-label>Mis Partidos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="grupos">
+      <ion-label>Grupos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="resumen">
+      <ion-label>Resumen</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <router-outlet></router-outlet>
+</ion-content>

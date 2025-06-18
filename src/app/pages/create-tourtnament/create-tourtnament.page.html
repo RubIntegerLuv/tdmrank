@@ -13,50 +13,49 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item button (click)="goHome()">
-        Ir a Inicio
-      </ion-item>
-      <ion-item button (click)="logout()">
-        Cerrar Sesión
-      </ion-item>
+      <ion-item button (click)="goHome()">Ir a Inicio</ion-item>
+      <ion-item button (click)="logout()">Cerrar Sesión</ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
 <ion-content id="main-content">
   <app-header></app-header>
-    <div class="content-container">
-      <div class="form-container">
-
-        <ion-item lines="none" class="custom-input">
-          <ion-input type="text" placeholder="Nombre del Torneo"></ion-input>
-        </ion-item>
-
-        <ion-item lines="none" class="custom-input">
-          <ion-input type="number" placeholder="Cantidad de jugadores"></ion-input>
-        </ion-item>
-
-        <ion-item lines="none" class="custom-input">
-          <ion-select placeholder="Jugadores por grupo">
-            <ion-select-option value="2">2</ion-select-option>
-            <ion-select-option value="3">3</ion-select-option>
-            <ion-select-option value="4">4</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item lines="none" class="custom-input">
-          <ion-select placeholder="Tipo de torneo">
-            <ion-select-option value="elimination">Eliminación</ion-select-option>
-            <ion-select-option value="round-robin">Round Robin</ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item lines="none" class="custom-input">
-          <ion-datetime placeholder="Fecha y hora"></ion-datetime>
-        </ion-item>
-
-        <ion-button expand="block" class="crear-torneo">Crear Torneo</ion-button>
-
-      </div>
+  <div class="content-container">
+    <div class="form-container" *ngIf="!torneoCreado">
+      <ion-item lines="none" class="custom-input">
+        <ion-input type="text" placeholder="Nombre del Torneo" [(ngModel)]="nombreTorneo"></ion-input>
+      </ion-item>
+      <ion-item lines="none" class="custom-input">
+        <ion-datetime placeholder="Fecha y hora" [(ngModel)]="fechaTorneo"></ion-datetime>
+      </ion-item>
+      <ion-button expand="block" class="crear-torneo" (click)="crearTorneo()" [disabled]="creando">
+        Crear Torneo
+      </ion-button>
     </div>
+
+    <div class="form-container" *ngIf="torneoCreado">
+      <h2>Torneo creado</h2>
+      <p><b>Código del torneo:</b></p>
+      <h1 style="letter-spacing: 8px; color: #A20E43;">{{ codigoTorneo }}</h1>
+      <ion-list>
+        <ion-list-header>Jugadores inscritos ({{ jugadores.length }}/4)</ion-list-header>
+        <ion-item *ngFor="let jugador of jugadores">
+          {{ jugador.nombre }} {{ jugador.apellido }}
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <ion-list-header>Árbitros inscritos ({{ arbitros.length }}/1)</ion-list-header>
+        <ion-item *ngFor="let arbitro of arbitros">
+          {{ arbitro.nombre }} {{ arbitro.apellido }}
+        </ion-item>
+      </ion-list>
+      <ion-text color="warning" *ngIf="esperando">
+        Esperando a que se unan 4 jugadores y al menos 1 árbitro...
+      </ion-text>
+      <ion-button expand="block" color="success" (click)="iniciarTorneo()" [disabled]="esperando">
+        Iniciar Torneo
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

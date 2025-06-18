@@ -46,4 +46,7 @@ export class HomePage implements OnInit {
   joinTournament() {
     this.router.navigate(['/join-tournament']);
   }
+  goToRanking() {
+    this.router.navigate(['/ranking']);
+  }
 }

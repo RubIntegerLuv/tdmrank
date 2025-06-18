@@ -1,0 +1,28 @@
+ion-content {
+  --background: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+  height: 100vh;
+}
+
+.join-tournament-container {
+  padding: 24px;
+  max-width: 320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 48px;
+}
+
+ion-item {
+  --background: #e0e0e0;
+  border-radius: 4px;
+}
+
+ion-button {
+  --background: #A20E43;
+  --color: white;
+  --border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
