@@ -1,13 +1,17 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>torneo-grupos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">torneo-grupos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ng-container *ngFor="let grupo of grupos">
+    <h2>Grupo {{ grupo }}</h2>
+    <ion-card *ngFor="let partido of partidosPorGrupo[grupo]">
+      <ion-card-header>
+        <ion-card-title>
+          {{ partido.jugadores[0].nombre }} vs {{ partido.jugadores[1].nombre }}
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div>
+          <b>Resultado:</b> {{ getResultadoSets(partido) }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 </ion-content>

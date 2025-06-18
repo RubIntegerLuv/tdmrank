@@ -29,8 +29,37 @@
     <ion-item>
       <ion-input placeholder="Código" [(ngModel)]="codigoTorneo"></ion-input>
     </ion-item>
+    <ion-item>
+      <ion-label>Unirme como</ion-label>
+      <ion-select [(ngModel)]="rol">
+        <ion-select-option value="jugador">Jugador</ion-select-option>
+        <ion-select-option value="arbitro">Árbitro</ion-select-option>
+      </ion-select>
+    </ion-item>
     <ion-button expand="block" (click)="unirseATorneo()">Unirse al Torneo</ion-button>
     <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
     <ion-text color="success" *ngIf="successMsg">{{ successMsg }}</ion-text>
+
+    <div *ngIf="successMsg && esperando">
+      <h2>Esperando a que el administrador inicie el torneo...</h2>
+      <ion-list>
+        <ion-list-header>Jugadores inscritos ({{ jugadores.length }})</ion-list-header>
+        <ion-item *ngFor="let jugador of jugadores">
+          {{ jugador.nombre }} {{ jugador.apellido }}
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <ion-list-header>Árbitros inscritos ({{ arbitros.length }})</ion-list-header>
+        <ion-item *ngFor="let arbitro of arbitros">
+          {{ arbitro.nombre }} {{ arbitro.apellido }}
+        </ion-item>
+      </ion-list>
+    </div>
+    <div *ngIf="successMsg && !esperando">
+      <ion-text color="success">
+        El torneo ya ha comenzado. <br>
+        <b>Ve a la sección "Torneos" para ver tus partidos.</b>
+      </ion-text>
+    </div>
   </div>
 </ion-content>

@@ -3,7 +3,6 @@ import { Firestore, collection, query, where, getDocs, doc, updateDoc } from '@a
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-join-tournament',
@@ -15,6 +14,12 @@ export class JoinTournamentPage {
   codigoTorneo: string = '';
   errorMsg: string = '';
   successMsg: string = '';
+  rol: 'jugador' | 'arbitro' = 'jugador';
+  torneoIniciado: boolean = false;
+  torneoNombre: string = '';
+  esperando: boolean = false;
+  jugadores: any[] = [];
+  arbitros: any[] = [];
 
   constructor(
     private firestore: Firestore,
@@ -26,10 +31,21 @@ export class JoinTournamentPage {
   async unirseATorneo() {
     this.errorMsg = '';
     this.successMsg = '';
+    this.torneoIniciado = false;
+    this.esperando = false;
+    this.torneoNombre = '';
+    this.jugadores = [];
+    this.arbitros = [];
+
     const user = await this.authService.getCurrentUserData();
 
     if (!user) {
       this.errorMsg = 'Debes iniciar sesión para unirte a un torneo.';
+      return;
+    }
+
+    if (!this.codigoTorneo) {
+      this.errorMsg = 'Debes ingresar el código del torneo.';
       return;
     }
 
@@ -46,39 +62,56 @@ export class JoinTournamentPage {
     const torneoDocRef = torneoDoc.ref;
     const torneoData = torneoDoc.data();
 
-    const jugadores = torneoData['jugadores'] || [];
-    const maxJugadores = torneoData['jugadoresPorGrupo']
-      ? torneoData['jugadoresPorGrupo'] * 4 // Suponiendo 4 grupos como máximo
-      : 4;
+    this.torneoNombre = torneoData['nombre'] || '';
+    this.torneoIniciado = torneoData['estado'] !== 'esperando';
+    this.jugadores = torneoData['jugadores'] || [];
+    this.arbitros = torneoData['arbitros'] || [];
 
-    if (jugadores.some((j: any) => j.uid === user?.["uid"])) {
-      this.errorMsg = 'Ya estás inscrito en este torneo.';
+    // Verifica si ya está inscrito como jugador o árbitro
+    const yaJugador = this.jugadores.some((j: any) => j.uid === user['uid']);
+    const yaArbitro = this.arbitros.some((a: any) => a.uid === user['uid']);
+
+    if (this.rol === 'jugador' && yaJugador) {
+      this.successMsg = 'Ya estás inscrito en este torneo como jugador.';
+      this.esperando = !this.torneoIniciado;
+      return;
+    }
+    if (this.rol === 'arbitro' && yaArbitro) {
+      this.successMsg = 'Ya estás inscrito en este torneo como árbitro.';
+      this.esperando = !this.torneoIniciado;
       return;
     }
 
-    if (jugadores.length >= maxJugadores) {
-      this.errorMsg = 'El torneo ya alcanzó su capacidad máxima.';
-      return;
+    // Agrega al usuario al arreglo correspondiente
+    if (this.rol === 'jugador') {
+      this.jugadores.push({
+        uid: user['uid'],
+        nombre: user['nombre'],
+        apellido: user['apellido'],
+        email: user['email']
+      });
+      await updateDoc(torneoDocRef, { jugadores: this.jugadores });
+      this.successMsg = '¡Te has unido al torneo como jugador!';
+    } else if (this.rol === 'arbitro') {
+      this.arbitros.push({
+        uid: user['uid'],
+        nombre: user['nombre'],
+        apellido: user['apellido'],
+        email: user['email']
+      });
+      await updateDoc(torneoDocRef, { arbitros: this.arbitros });
+      this.successMsg = '¡Te has unido al torneo como árbitro!';
     }
 
-    jugadores.push({
-      uid: user?.["uid"],
-      nombre: user?.["nombre"],
-      apellido: user?.["apellido"],
-      email: user?.["email"]
-    });
-
-    await updateDoc(torneoDocRef, { jugadores });
-
-    this.successMsg = '¡Te has unido al torneo!';
-
-    // Esperar un poco antes de redirigir
-    await updateDoc(torneoDocRef, { jugadores });
-    this.successMsg = '¡Te has unido al torneo!';
-    // Redirige al torneo (tabs)
-    this.router.navigate(['/torneo', torneoData['codigo']]);
+    // Vuelve a cargar el estado para mostrar la espera si corresponde
+    const torneoActualizado = (await getDocs(q)).docs[0].data();
+    this.torneoIniciado = torneoActualizado['estado'] !== 'esperando';
+    this.esperando = !this.torneoIniciado;
+    this.jugadores = torneoActualizado['jugadores'] || [];
+    this.arbitros = torneoActualizado['arbitros'] || [];
   }
-   async logout() {
+
+  async logout() {
     try {
       await this.authService.logout();
       await this.menuCtrl.close('main-menu');

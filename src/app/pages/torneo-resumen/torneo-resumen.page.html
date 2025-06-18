@@ -1,13 +1,60 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>torneo-resumen</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <!-- Fases de eliminación directa (final, semi, cuartos, etc.) -->
+  <ng-container *ngFor="let fase of fases">
+    <h2>{{ fase | titlecase }}</h2>
+    <ng-container *ngIf="getPartidosPorFase(fase).length; else pendiente">
+      <ion-card *ngFor="let partido of getPartidosPorFase(fase)">
+        <ion-card-header>
+          <ion-card-title>
+            {{ partido.jugadores[0].nombre }} vs {{ partido.jugadores[1].nombre }}
+          </ion-card-title>
+          <ion-card-subtitle>
+            Estado: {{ partido.estado | titlecase }}
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <div *ngIf="partido.ganador">
+            <b>Ganador:</b> {{ partido.ganador.nombre }} {{ partido.ganador.apellido }}
+          </div>
+          <div *ngIf="!partido.ganador">
+            <b>Por definir</b>
+          </div>
+          <div *ngIf="partido.arbitro">
+            <b>Árbitro:</b> {{ partido.arbitro.nombre }} {{ partido.arbitro.apellido }}
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+    <ng-template #pendiente>
+      <ion-card>
+        <ion-card-content>Por definir</ion-card-content>
+      </ion-card>
+    </ng-template>
+  </ng-container>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">torneo-resumen</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Grupos -->
+  <ng-container *ngFor="let grupo of grupos">
+    <h2>Partidos {{ grupo }}</h2>
+    <ion-card *ngFor="let partido of getPartidosPorGrupo(grupo)">
+      <ion-card-header>
+        <ion-card-title>
+          {{ partido.jugadores[0]?.nombre }} vs {{ partido.jugadores[1]?.nombre }}
+        </ion-card-title>
+        <ion-card-subtitle>
+          Estado: {{ partido.estado | titlecase }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngIf="partido.ganador">
+          <b>Ganador:</b> {{ partido.ganador.nombre }} {{ partido.ganador.apellido }}
+        </div>
+        <div *ngIf="!partido.ganador">
+          <b>Por definir</b>
+        </div>
+        <div *ngIf="partido.arbitro">
+          <b>Árbitro:</b> {{ partido.arbitro.nombre }} {{ partido.arbitro.apellido }}
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
 </ion-content>

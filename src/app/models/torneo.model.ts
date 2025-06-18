@@ -2,9 +2,9 @@ export interface Torneo {
   id?: string;
   nombre: string;
   estado: 'esperando' | 'en_juego' | 'finalizado';
-  tipo: 'grupos' | 'eliminacion_directa'; // nuevo campo
+  tipo: 'grupos';
   jugadores: Jugador[];
-  grupos?: Grupo[]; // nuevo
+  grupos?: Grupo[];
   partidos: Partido[];
   ganador?: Jugador;
   creadoPor: Jugador;
@@ -20,15 +20,19 @@ export interface Jugador {
 
 export interface Partido {
   id: string;
-  fase: 'grupo' | 'octavos' | 'cuartos' | 'semifinal1' | 'semifinal2' | 'final';
+  fase: string;
+  grupo?: string;
   jugadores: Jugador[];
-  arbitro?: Jugador;
-  puntajes?: number[];
-  estado: 'pendiente' | 'en_juego' | 'finalizado';
+  arbitro?: Jugador | null;
+  estado: string;
+  ganador?: Jugador | null;
+  codigo?: string;
+  setsGanados?: [number, number]; // <-- Añadido para mostrar los sets (ej: [3,1])
+  // Puedes agregar más campos si lo necesitas (ej: fecha, etc.)
 }
 
 export interface Grupo {
   nombre: string; // Ej: "Grupo A"
   jugadores: Jugador[];
-  resultados?: { [uid: string]: number }; // puntajes por jugador
+  resultados?: { [uid: string]: number };
 }

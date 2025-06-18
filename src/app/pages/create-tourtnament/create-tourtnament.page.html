@@ -38,23 +38,27 @@
       <h2>Torneo creado</h2>
       <p><b>Código del torneo:</b></p>
       <h1 style="letter-spacing: 8px; color: #A20E43;">{{ codigoTorneo }}</h1>
+      <ion-button fill="clear" (click)="copiarCodigo()">Copiar código</ion-button>
       <ion-list>
-        <ion-list-header>Jugadores inscritos ({{ jugadores.length }}/4)</ion-list-header>
+        <ion-list-header>Jugadores inscritos ({{ jugadores.length }})</ion-list-header>
         <ion-item *ngFor="let jugador of jugadores">
           {{ jugador.nombre }} {{ jugador.apellido }}
         </ion-item>
       </ion-list>
       <ion-list>
-        <ion-list-header>Árbitros inscritos ({{ arbitros.length }}/1)</ion-list-header>
+        <ion-list-header>Árbitros inscritos ({{ arbitros.length }})</ion-list-header>
         <ion-item *ngFor="let arbitro of arbitros">
           {{ arbitro.nombre }} {{ arbitro.apellido }}
         </ion-item>
       </ion-list>
       <ion-text color="warning" *ngIf="esperando">
-        Esperando a que se unan 4 jugadores y al menos 1 árbitro...
+        Esperando a que se unan al menos 4 jugadores y al menos 1 árbitro...
       </ion-text>
       <ion-button expand="block" color="success" (click)="iniciarTorneo()" [disabled]="esperando">
         Iniciar Torneo
+      </ion-button>
+      <ion-button expand="block" color="primary" (click)="avanzarFaseEliminacionDirecta()">
+        Avanzar a Fase Eliminatoria
       </ion-button>
     </div>
   </div>

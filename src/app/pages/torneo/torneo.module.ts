@@ -4,15 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { TorneoPage } from './torneo.page';
-import { TorneoMisPartidosPageModule } from 'src/app/pages/torneo-mis-partidos/torneo-mis-partidos.module';
-import { TorneoGruposPageModule } from 'src/app/pages/torneo-grupos/torneo-grupos.module';
-import { TorneoResumenPageModule } from 'src/app/pages/torneo-resumen/torneo-resumen.module';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    SharedModule,
     RouterModule.forChild([
       {
         path: '',

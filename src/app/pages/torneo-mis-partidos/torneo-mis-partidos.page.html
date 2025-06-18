@@ -1,13 +1,34 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>torneo-mis-partidos</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">torneo-mis-partidos</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list *ngIf="partidos.length > 0">
+    <ion-card *ngFor="let partido of partidos">
+      <ion-card-header>
+        <ion-card-title>
+          {{ partido.grupo ? partido.grupo : partido.fase | titlecase }}
+        </ion-card-title>
+        <ion-card-subtitle>
+          Estado: {{ partido.estado | titlecase }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div>
+          <b>Jugador 1:</b> {{ partido.jugadores[0].nombre }} {{ partido.jugadores[0].apellido }}
+        </div>
+        <div>
+          <b>Jugador 2:</b> {{ partido.jugadores[1].nombre }} {{ partido.jugadores[1].apellido }}
+        </div>
+        <div *ngIf="partido.arbitro">
+          <b>Árbitro:</b> {{ partido.arbitro.nombre }} {{ partido.arbitro.apellido }}
+        </div>
+        <div *ngIf="!partido.arbitro && esArbitro(partido)">
+          <ion-button size="small" (click)="asignarseComoArbitro(partido)">Asignarme como árbitro</ion-button>
+        </div>
+        <ion-button expand="block" color="primary" (click)="irASala(partido)">
+          {{ esJugador(partido) ? 'Unirse' : 'Arbitrar' }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+  <ion-text *ngIf="partidos.length === 0">
+    No tienes partidos asignados en este torneo.
+  </ion-text>
 </ion-content>
