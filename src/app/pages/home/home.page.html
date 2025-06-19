@@ -28,9 +28,9 @@
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
         Perfil
       </ion-item>
-      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro' || usuario?.tipoUsuario === 'administrador'" (click)="goToRanking()">
+      <ion-item button (click)="goToRanking()">
         Ranking
-      </ion-item>s
+      </ion-item>
       <ion-item button (click)="logout()">
         Cerrar Sesión
       </ion-item>
