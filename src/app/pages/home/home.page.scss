@@ -52,15 +52,172 @@ ion-content {
 }
 
 .info-box {
-  width: auto;           // O elimina esta línea si prefieres
-  min-width: unset;
-  margin: 16px;          // Margen uniforme en todos los lados
+  max-width: 70%;
+  margin: 1.5rem auto;
+  padding: 1rem 1.2rem;
+  border-radius: 16px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  padding: 20px;
-  min-height: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  font-size: 1rem;
+}
+
+:host {
+  background: #9e174d;
+  min-height: 100vh;
+  display: block;
+}
+
+.top5-ranking-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.5rem 2rem;
+  margin: 2rem auto;
+  max-width: 270px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+}
+
+.top5-titulo {
+  text-align: center;
+  color: #9e174d;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+
+.top5-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.top5-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1.1rem;
+}
+
+.top5-posicion {
+  font-weight: 700;
+  color: #9e174d;
+  width: 2rem;
+  text-align: center;
+}
+
+.top5-nombre {
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.top5-puntos {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.top5-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1rem;
+}
+
+.top5-table th, .top5-table td {
+  padding: 0.2rem 0.5rem;
+  text-align: left;
+}
+
+.top5-table th {
+  color: #9e174d;
+  font-weight: 700;
+  font-size: 1rem;
+  padding-bottom: 0.3rem;
+}
+
+.top5-table td {
+  font-weight: 500;
+  color: #222;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.top5-table tr:last-child td {
+  border-bottom: none;
+}
+
+.top5-table td:first-child {
+  color: #9e174d;
+  font-weight: 700;
+  text-align: center;
+  width: 1.5rem;
+}
+
+.top5-table td:last-child {
+  text-align: center;
+  font-weight: 700;
+}
+
+.ranking-container {
+  background: #fff;
+  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  margin: 2rem auto 1.5rem auto;
+  max-width: 700px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.ranking-card {
+  width: 100%;
+}
+
+.ranking-titulo {
+  text-align: center;
+  color: #9e174d;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.ranking-table {
+  width: 50%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ranking-table th, .ranking-table td {
+  padding: 0.7rem 0.5rem;
+  text-align: left;
+}
+
+.ranking-table th {
+  background: #9e174d;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.ranking-table tr:nth-child(even) td {
+  background: #f5f5f5;
+}
+
+.ranking-table td {
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.ranking-table th:last-child,
+.ranking-table td:last-child {
+  width: 90px; // Puedes ajustar este valor
+  text-align: center;
+}
+
+.ranking-vacio {
+  text-align: center;
+  color: #9e174d;
+  margin-top: 1rem;
 }
