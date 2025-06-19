@@ -6,7 +6,9 @@
 
 <ion-content [fullscreen]="true" class="perfil-content">
   <div class="perfil-container">
-    <h2 class="perfil-nombre">{{ jugador?.nombre }} {{ jugador?.apellido }}</h2>
+    <div class="perfil-nombre-card">
+      <h1>{{ jugador.nombre }} {{ jugador.apellido }}</h1>
+    </div>
 
     <!-- Debajo del nombre, antes de las estadísticas -->
     <div class="perfil-paleta-edit">
@@ -46,28 +48,6 @@
           <p>{{ porcentajeVictoriasMes }}%</p>
         </div>
       </div>
-
-      <!-- Historial de partidos -->
-      <div class="perfil-historial">
-        <h3>Historial de Partidos</h3>
-        <div *ngFor="let partido of historialPartidos"
-            [ngClass]="{'partido-ganado': partido.ganado, 'partido-perdido': !partido.ganado}"
-            class="partido-card">
-          <div class="partido-estado">
-            {{ partido.ganado ? 'Ganado' : 'Perdido' }}
-          </div>
-          <div class="partido-detalles">
-            <div><strong>Oponente:</strong> {{ partido.oponente }}</div>
-            <div><strong>Sets:</strong> {{ partido.setsUsuario }} - {{ partido.setsOponente }}</div>
-            <div><strong>Fecha:</strong> {{ partido.fecha | date:'dd/MM/yyyy' }}</div>
-          </div>
-        </div>
-        <div *ngIf="historialPartidos.length === 0" class="historial-vacio">
-          No hay partidos registrados.
-        </div>
-      </div>
-    </div>
-
     <div class="perfil-ranking">
       <h3>Ranking</h3>
       <div *ngIf="posicionRanking; else sinRanking">
@@ -76,6 +56,28 @@
       <ng-template #sinRanking>
         <p>No tienes posición en el ranking.</p>
       </ng-template>
+    </div>
+      <!-- Historial de partidos -->
+      <div class="perfil-historial-card">
+        <h2 class="perfil-titulo">Historial de Partidos</h2>
+        <ng-container *ngIf="historialPartidos.length > 0; else vacio">
+          <div *ngFor="let partido of historialPartidos" class="atp-row" [ngClass]="{'ganado': partido.ganado, 'perdido': !partido.ganado}">
+            <span class="atp-nombre" [ngClass]="{'ganado': partido.ganado, 'perdido': !partido.ganado}">
+              {{ jugador.nombre }} {{ jugador.apellido }}
+            </span>
+            <span class="atp-set-col">{{ partido.setsUsuario }}</span>
+            <span class="atp-nombre atp-oponente">{{ partido.oponente }}</span>
+            <span class="atp-set-col">{{ partido.setsOponente }}</span>
+            <span class="atp-resultado" [ngClass]="{'ganado': partido.ganado, 'perdido': !partido.ganado}">
+              {{ partido.ganado ? 'Ganado' : 'Perdido' }}
+            </span>
+            <span class="atp-fecha">{{ partido.fecha | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </ng-container>
+        <ng-template #vacio>
+          <div class="historial-vacio">No hay partidos registrados.</div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </ion-content>

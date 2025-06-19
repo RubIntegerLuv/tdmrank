@@ -6,27 +6,29 @@
 
 <ion-content [fullscreen]="true" class="ranking-content">
   <div class="ranking-container">
-    <h2>Ranking de Jugadores</h2>
-    <table class="ranking-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Jugador</th>
-          <th>Ganados</th>
-          <th>Jugados</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let jugador of ranking; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ jugador.nombre }} {{ jugador.apellido }}</td>
-          <td>{{ jugador.partidosGanados }}</td>
-          <td>{{ jugador.partidosJugados }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div *ngIf="ranking.length === 0" class="ranking-vacio">
-      No hay jugadores registrados.
+    <div class="ranking-card">
+      <h2 class="ranking-titulo">Ranking de Jugadores</h2>
+      <table class="ranking-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Ganados</th>
+            <th>Jugados</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let jugador of ranking; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ jugador.nombre }} {{ jugador.apellido }}</td>
+            <td>{{ jugador.partidosGanados }}</td>
+            <td>{{ jugador.partidosJugados }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="ranking.length === 0" class="ranking-vacio">
+        No hay jugadores registrados.
+      </div>
     </div>
   </div>
 </ion-content>
