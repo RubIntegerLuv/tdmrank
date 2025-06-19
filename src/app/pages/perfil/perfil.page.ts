@@ -48,6 +48,7 @@ export class PerfilPage implements OnInit {
     }
   }
 
+
   async cargarDatosJugador() {
     const user = await this.authService.getCurrentUserData();
     console.log('Usuario cargado:', user);

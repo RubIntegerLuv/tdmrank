@@ -36,7 +36,6 @@ export class HomePage implements OnInit {
     this.usuario = await this.authService.getCurrentUserData();
     await this.cargarRankingJugadores();
     this.top5Ranking = this.rankingJugadores.slice(0, 5);
-    console.log('Top 5 Ranking:', this.top5Ranking);
   }
 
   async logout() {
