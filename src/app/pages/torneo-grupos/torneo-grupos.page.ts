@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Firestore, collection, query, where, onSnapshot, DocumentData } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
-import { Partido, Jugador } from '../../models/torneo.model';
+import { Partido } from '../../models/torneo.model';
+import { User } from '../../models/user.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-torneo-grupos',
@@ -14,35 +16,52 @@ export class TorneoGruposPage implements OnInit, OnDestroy {
   grupos: string[] = [];
   partidosPorGrupo: { [grupo: string]: Partido[] } = {};
   unsubscribe: any;
+  user: User | null = null;
 
   constructor(
     private firestore: Firestore,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.torneoId = this.route.parent?.snapshot.paramMap.get('codigo') || '';
+  async ngOnInit() {
+    this.user = await this.authService.getCurrentUserData() as User | null;
+
+    // Obtención robusta del UID del torneo
+    let uid = this.route.snapshot.paramMap.get('uid');
+    if (!uid && this.route.parent) {
+      uid = this.route.parent.snapshot.paramMap.get('uid');
+    }
+    if (!uid && this.route.parent?.parent) {
+      uid = this.route.parent.parent.snapshot.paramMap.get('uid');
+    }
+    this.torneoId = uid || '';
+
     this.cargarPartidosGruposTiempoReal();
   }
 
   cargarPartidosGruposTiempoReal() {
     const partidosRef = collection(this.firestore, 'partidos');
-    const q = query(partidosRef, where('torneoId', '==', this.torneoId), where('fase', '==', 'grupo'));
+    const q = query(partidosRef, where('torneoId', '==', this.torneoId));
     this.unsubscribe = onSnapshot(q, (snapshot) => {
-      const partidos: Partido[] = snapshot.docs.map(d => {
+      const todosLosPartidos: Partido[] = snapshot.docs.map(d => {
         const data = d.data() as DocumentData;
         return {
           id: d.id,
           grupo: data['grupo'],
           jugadores: data['jugadores'],
           setsGanados: data['setsGanados'],
-          ganador: data['ganador'] ?? null
+          ganador: data['ganador'] ?? null,
+          fase: data['fase']
         } as Partido;
       });
 
+      // Filtra solo los de fase grupo
+      const partidos = todosLosPartidos.filter(p => p.fase === 'grupo');
+
       // Agrupar partidos por grupo
       const gruposSet = new Set(partidos.map(p => p.grupo));
-this.grupos = Array.from(gruposSet).filter((g): g is string => typeof g === 'string').sort();
+      this.grupos = Array.from(gruposSet).filter((g): g is string => typeof g === 'string').sort();
       this.partidosPorGrupo = {};
       for (const grupo of this.grupos) {
         this.partidosPorGrupo[grupo] = partidos.filter(p => p.grupo === grupo);
@@ -54,7 +73,6 @@ this.grupos = Array.from(gruposSet).filter((g): g is string => typeof g === 'str
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  // Devuelve el resultado en sets (ej: "3-1") o "esperando resultado"
   getResultadoSets(partido: Partido): string {
     if (Array.isArray(partido.setsGanados) && partido.setsGanados.length === 2) {
       if (typeof partido.setsGanados[0] === 'number' && typeof partido.setsGanados[1] === 'number') {

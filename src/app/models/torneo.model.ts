@@ -1,5 +1,5 @@
 export interface Torneo {
-  id?: string;
+  uid: string;
   nombre: string;
   estado: 'esperando' | 'en_juego' | 'finalizado';
   tipo: 'grupos';
@@ -9,6 +9,7 @@ export interface Torneo {
   ganador?: Jugador;
   creadoPor: Jugador;
   creadoEn: Date;
+  arbitros?: Jugador[];
 }
 
 export interface Jugador {

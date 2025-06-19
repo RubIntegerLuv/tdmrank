@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-torneo',
@@ -7,21 +8,24 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrls: ['./torneo.page.scss'],
   standalone: false
 })
-export class TorneoPage {
+export class TorneoPage implements OnInit {
   vistaSeleccionada = 'mis-partidos';
 
   constructor(private router: Router, private route: ActivatedRoute) {}
 
+  ngOnInit() {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        const child = this.route.firstChild;
+        if (child && child.snapshot.url.length > 0) {
+          this.vistaSeleccionada = child.snapshot.url[0].path;
+        }
+      });
+  }
+
   cambiarVista(event: any) {
     const value = event.detail ? event.detail.value : event;
     this.router.navigate([value], { relativeTo: this.route });
-  }
-
-  ngOnInit() {
-    // Mantener el tab activo según la url
-    const child = this.route.firstChild;
-    if (child && child.snapshot.url.length > 0) {
-      this.vistaSeleccionada = child.snapshot.url[0].path;
-    }
   }
 }

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { TorneoPage } from './pages/torneo/torneo.page';
+import { TorneoPageModule } from './pages/torneo/torneo.module';
 
 const routes: Routes = [
   {
@@ -44,10 +45,34 @@ const routes: Routes = [
     path: 'join-tournament',
     loadChildren: () => import('./pages/join-tournament/join-tournament.module').then( m => m.JoinTournamentPageModule)
   },
+
+    {
+      path: 'torneo/:uid',
+      component: TorneoPage,
+      children: [
+        {
+          path: 'mis-partidos',
+          loadChildren: () =>
+            import('./pages/torneo-mis-partidos/torneo-mis-partidos.module').then(m => m.TorneoMisPartidosPageModule),
+        },
+        {
+          path: 'grupos',
+          loadChildren: () =>
+            import('./pages/torneo-grupos/torneo-grupos.module').then(m => m.TorneoGruposPageModule),
+        },
+        {
+          path: 'resumen',
+          loadChildren: () =>
+            import('./pages/torneo-resumen/torneo-resumen.module').then(m => m.TorneoResumenPageModule),
+        },
+        {
+          path: '',
+          redirectTo: 'mis-partidos',
+          pathMatch: 'full'
+        }
+      ]
+    },
   {
-    path: 'torneo/:codigo',
-    loadChildren: () => import('./pages/torneo/torneo.module').then(m => m.TorneoPageModule)
-  },  {
     path: 'ranking',
     loadChildren: () => import('./pages/ranking/ranking.module').then( m => m.RankingPageModule)
   },
@@ -56,7 +81,8 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+    TorneoPageModule // Import the TorneoPageModule here
   ],
   exports: [RouterModule]
 })

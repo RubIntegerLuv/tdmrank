@@ -29,13 +29,6 @@
     <ion-item>
       <ion-input placeholder="Código" [(ngModel)]="codigoTorneo"></ion-input>
     </ion-item>
-    <ion-item>
-      <ion-label>Unirme como</ion-label>
-      <ion-select [(ngModel)]="rol">
-        <ion-select-option value="jugador">Jugador</ion-select-option>
-        <ion-select-option value="arbitro">Árbitro</ion-select-option>
-      </ion-select>
-    </ion-item>
     <ion-button expand="block" (click)="unirseATorneo()">Unirse al Torneo</ion-button>
     <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
     <ion-text color="success" *ngIf="successMsg">{{ successMsg }}</ion-text>
@@ -57,8 +50,7 @@
     </div>
     <div *ngIf="successMsg && !esperando">
       <ion-text color="success">
-        El torneo ya ha comenzado. <br>
-        <b>Ve a la sección "Torneos" para ver tus partidos.</b>
+        ¡El torneo ha comenzado! Redirigiendo...
       </ion-text>
     </div>
   </div>

@@ -4,7 +4,7 @@
     <ion-card *ngFor="let partido of partidosPorGrupo[grupo]">
       <ion-card-header>
         <ion-card-title>
-          {{ partido.jugadores[0].nombre }} vs {{ partido.jugadores[1].nombre }}
+          {{ partido.jugadores[0].nombre || partido.jugadores[0].apellido }} vs {{ partido.jugadores[1].nombre || partido.jugadores[1].apellido }}
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Firestore, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-partido',
@@ -17,7 +19,7 @@ export class PartidoPage implements OnInit {
   setsGanados: number[] = [0, 0];
   puntosActuales: number[] = [0, 0];
   lado: number[] = [0, 1];
-  cantidadSets: number = 3;
+  cantidadSets: number = 5;
   ganador: string | null = null;
   esArbitro: boolean = false;
   emptySets: any[][] = [[], []];
@@ -28,7 +30,8 @@ export class PartidoPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private firestore: Firestore,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -38,21 +41,37 @@ export class PartidoPage implements OnInit {
       const data = snapshot.data();
       if (data) {
         this.partido = data;
-        this.jugadores = data['jugadores'];
-        this.arbitro = data['arbitro'];
-        this.setsGanados = data['setsGanados'];
-        this.puntosActuales = data['puntosActuales'];
-        this.lado = data['lado'];
-        this.cantidadSets = data['cantidadSets'];
-        this.ganador = data['ganador'];
-        this.emptySets = [
-          Array(Math.max(0, Math.floor(this.cantidadSets / 2 + 1 - this.setsGanados[0]))),
-          Array(Math.max(0, Math.floor(this.cantidadSets / 2 + 1 - this.setsGanados[1])))
-        ];
+        this.jugadores = data['jugadores'] || [];
+        this.arbitro = data['arbitro'] || null;
+        this.setsGanados = Array.isArray(data['setsGanados']) && data['setsGanados'].length === 2
+          ? data['setsGanados']
+          : [0, 0];
+        this.puntosActuales = Array.isArray(data['puntosActuales']) && data['puntosActuales'].length === 2
+          ? data['puntosActuales']
+          : [0, 0];
+        this.lado = Array.isArray(data['lado']) && data['lado'].length === 2
+          ? data['lado']
+          : [0, 1];
+        this.cantidadSets = typeof data['cantidadSets'] === 'number' ? data['cantidadSets'] : 3;
+        this.ganador = data['ganador'] || null;
         this.historial = data['historial'] || [];
 
+        // Validación defensiva para emptySets
+        const sets0 = typeof this.setsGanados[0] === 'number' ? this.setsGanados[0] : 0;
+        const sets1 = typeof this.setsGanados[1] === 'number' ? this.setsGanados[1] : 0;
+        const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
+        this.emptySets = [
+          Array(Math.max(0, setsParaGanar - sets0)),
+          Array(Math.max(0, setsParaGanar - sets1))
+        ];
+
         const user = await this.authService.getCurrentUserData();
-        this.esArbitro = user?.["uid"] === this.arbitro?.uid;
+        this.esArbitro = !!(
+          user &&
+          this.arbitro &&
+          user["uid"] === this.arbitro["uid"] &&
+          user["tipoUsuario"] === "arbitro"
+        );
       }
     });
   }
@@ -120,11 +139,11 @@ export class PartidoPage implements OnInit {
     // ¿Alguien ganó el partido?
     const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
     if (setsGanados[0] === setsParaGanar) {
-      ganador = this.jugadores[lado[0]].nombre;
+      ganador = this.jugadores[lado[0]];
       ganadorUid = this.jugadores[lado[0]].uid;
     }
     if (setsGanados[1] === setsParaGanar) {
-      ganador = this.jugadores[lado[1]].nombre;
+      ganador = this.jugadores[lado[1]];
       ganadorUid = this.jugadores[lado[1]].uid;
     }
 
@@ -145,5 +164,18 @@ export class PartidoPage implements OnInit {
       ganadorUid: ganadorUid,
       historial: historial
     });
+  }
+
+  async finalizarPartido() {
+    if (!this.ganador) return; // Solo permite finalizar si hay ganador
+    const partidoDoc = doc(this.firestore, `partidos/${this.partidoId}`);
+    await updateDoc(partidoDoc, { estado: 'finalizado' });
+
+    // Si el partido tiene torneoId, navega al resumen del torneo, si no, al home
+    if (this.partido && this.partido.torneoId) {
+      this.router.navigate(['/torneo', this.partido.torneoId, 'resumen']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 }

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { Firestore, collection, query, where, getDocs, doc, updateDoc } from '@angular/fire/firestore';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Firestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-join-tournament',
@@ -10,16 +11,19 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['./join-tournament.page.scss'],
   standalone: false
 })
-export class JoinTournamentPage {
+export class JoinTournamentPage implements OnInit, OnDestroy {
   codigoTorneo: string = '';
   errorMsg: string = '';
   successMsg: string = '';
-  rol: 'jugador' | 'arbitro' = 'jugador';
   torneoIniciado: boolean = false;
   torneoNombre: string = '';
   esperando: boolean = false;
   jugadores: any[] = [];
   arbitros: any[] = [];
+  user: User | null = null;
+  torneoDocId: string = '';
+  torneoCodigo: string = '';
+  unsubscribe: any;
 
   constructor(
     private firestore: Firestore,
@@ -27,6 +31,10 @@ export class JoinTournamentPage {
     private menuCtrl: MenuController,
     private router: Router
   ) {}
+
+  async ngOnInit() {
+    this.user = await this.authService.getCurrentUserData() as User | null;
+  }
 
   async unirseATorneo() {
     this.errorMsg = '';
@@ -37,9 +45,7 @@ export class JoinTournamentPage {
     this.jugadores = [];
     this.arbitros = [];
 
-    const user = await this.authService.getCurrentUserData();
-
-    if (!user) {
+    if (!this.user) {
       this.errorMsg = 'Debes iniciar sesión para unirte a un torneo.';
       return;
     }
@@ -59,56 +65,82 @@ export class JoinTournamentPage {
     }
 
     const torneoDoc = querySnapshot.docs[0];
+    this.torneoDocId = torneoDoc.id; // UID del torneo
     const torneoDocRef = torneoDoc.ref;
     const torneoData = torneoDoc.data();
 
     this.torneoNombre = torneoData['nombre'] || '';
+    this.torneoCodigo = torneoData['codigo'];
     this.torneoIniciado = torneoData['estado'] !== 'esperando';
     this.jugadores = torneoData['jugadores'] || [];
     this.arbitros = torneoData['arbitros'] || [];
 
-    // Verifica si ya está inscrito como jugador o árbitro
-    const yaJugador = this.jugadores.some((j: any) => j.uid === user['uid']);
-    const yaArbitro = this.arbitros.some((a: any) => a.uid === user['uid']);
+    const esJugador = this.user.tipoUsuario === 'jugador';
+    const esArbitro = this.user.tipoUsuario === 'arbitro';
 
-    if (this.rol === 'jugador' && yaJugador) {
+    const yaJugador = this.jugadores.some((j: any) => j.uid === this.user!.uid);
+    const yaArbitro = this.arbitros.some((a: any) => a.uid === this.user!.uid);
+
+    if (esJugador && yaJugador) {
       this.successMsg = 'Ya estás inscrito en este torneo como jugador.';
       this.esperando = !this.torneoIniciado;
+      this.suscribirCambiosTorneo();
       return;
     }
-    if (this.rol === 'arbitro' && yaArbitro) {
+    if (esArbitro && yaArbitro) {
       this.successMsg = 'Ya estás inscrito en este torneo como árbitro.';
       this.esperando = !this.torneoIniciado;
+      this.suscribirCambiosTorneo();
       return;
     }
 
-    // Agrega al usuario al arreglo correspondiente
-    if (this.rol === 'jugador') {
+    if (esJugador) {
       this.jugadores.push({
-        uid: user['uid'],
-        nombre: user['nombre'],
-        apellido: user['apellido'],
-        email: user['email']
+        uid: this.user.uid,
+        nombre: this.user.nombre,
+        apellido: this.user.apellido,
+        email: this.user.email
       });
       await updateDoc(torneoDocRef, { jugadores: this.jugadores });
       this.successMsg = '¡Te has unido al torneo como jugador!';
-    } else if (this.rol === 'arbitro') {
+    } else if (esArbitro) {
       this.arbitros.push({
-        uid: user['uid'],
-        nombre: user['nombre'],
-        apellido: user['apellido'],
-        email: user['email']
+        uid: this.user.uid,
+        nombre: this.user.nombre,
+        apellido: this.user.apellido,
+        email: this.user.email
       });
       await updateDoc(torneoDocRef, { arbitros: this.arbitros });
       this.successMsg = '¡Te has unido al torneo como árbitro!';
+    } else {
+      this.errorMsg = 'Tu usuario no tiene un rol válido para unirse al torneo.';
+      return;
     }
 
-    // Vuelve a cargar el estado para mostrar la espera si corresponde
-    const torneoActualizado = (await getDocs(q)).docs[0].data();
-    this.torneoIniciado = torneoActualizado['estado'] !== 'esperando';
-    this.esperando = !this.torneoIniciado;
-    this.jugadores = torneoActualizado['jugadores'] || [];
-    this.arbitros = torneoActualizado['arbitros'] || [];
+    this.suscribirCambiosTorneo();
+  }
+
+  suscribirCambiosTorneo() {
+    if (!this.torneoDocId) return;
+    const torneoDoc = doc(this.firestore, 'torneos', this.torneoDocId);
+    if (this.unsubscribe) this.unsubscribe();
+    this.unsubscribe = onSnapshot(torneoDoc, (snap) => {
+      const data = snap.data();
+      this.torneoIniciado = data?.['estado'] !== 'esperando';
+      this.jugadores = data?.['jugadores'] || [];
+      this.arbitros = data?.['arbitros'] || [];
+      this.esperando = !this.torneoIniciado;
+      this.torneoCodigo = data?.['codigo'];
+
+      // Redirección automática cuando inicia el torneo
+      if (this.torneoIniciado && this.torneoDocId) {
+        this.router.navigate(['/torneo', this.torneoDocId]);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.unsubscribe) this.unsubscribe();
   }
 
   async logout() {

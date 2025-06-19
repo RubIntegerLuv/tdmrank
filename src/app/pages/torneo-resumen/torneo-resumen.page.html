@@ -1,4 +1,11 @@
 <ion-content>
+  <!-- Botón siguiente fase solo para admin y cuando corresponde -->
+  <div *ngIf="esAdmin && siguienteFaseDisponible" style="text-align:center; margin: 16px 0;">
+    <ion-button color="primary" (click)="crearSiguienteFase()">
+      Siguiente fase
+    </ion-button>
+  </div>
+
   <!-- Fases de eliminación directa (final, semi, cuartos, etc.) -->
   <ng-container *ngFor="let fase of fases">
     <h2>{{ fase | titlecase }}</h2>
@@ -38,7 +45,7 @@
     <ion-card *ngFor="let partido of getPartidosPorGrupo(grupo)">
       <ion-card-header>
         <ion-card-title>
-          {{ partido.jugadores[0]?.nombre }} vs {{ partido.jugadores[1]?.nombre }}
+          {{ partido.jugadores[0].nombre || partido.jugadores[0].apellido }} vs {{ partido.jugadores[1].nombre || partido.jugadores[1].apellido }}
         </ion-card-title>
         <ion-card-subtitle>
           Estado: {{ partido.estado | titlecase }}

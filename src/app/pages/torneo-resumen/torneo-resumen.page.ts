@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Firestore, collection, query, where, onSnapshot, DocumentData } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, onSnapshot, DocumentData, doc, getDoc, addDoc, updateDoc } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
-import { Partido, Jugador } from '../../models/torneo.model';
+import { Partido, Jugador, Torneo } from '../../models/torneo.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-torneo-resumen',
@@ -15,15 +16,35 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
   fases: string[] = [];
   grupos: string[] = [];
   unsubscribe: any;
+  user: Jugador | null = null;
+  torneo: Torneo | null = null;
 
   constructor(
     private firestore: Firestore,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.torneoId = this.route.parent?.snapshot.paramMap.get('codigo') || '';
+  async ngOnInit() {
+    // Obtención robusta del UID del torneo
+    let uid = this.route.snapshot.paramMap.get('uid');
+    if (!uid && this.route.parent) {
+      uid = this.route.parent.snapshot.paramMap.get('uid');
+    }
+    if (!uid && this.route.parent?.parent) {
+      uid = this.route.parent.parent.snapshot.paramMap.get('uid');
+    }
+    this.torneoId = uid || '';
+
+    this.user = await this.authService.getCurrentUserData() as Jugador | null;
+    await this.cargarTorneo();
     this.cargarPartidosTiempoReal();
+  }
+
+  async cargarTorneo() {
+    const torneoDoc = doc(this.firestore, 'torneos', this.torneoId);
+    const snap = await getDoc(torneoDoc);
+    this.torneo = snap.data() as Torneo;
   }
 
   cargarPartidosTiempoReal() {
@@ -40,7 +61,8 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
           arbitro: data['arbitro'],
           estado: data['estado'],
           ganador: data['ganador'],
-          codigo: data['codigo']
+          codigo: data['codigo'],
+          setsGanados: data['setsGanados']
         } as Partido;
       });
 
@@ -64,7 +86,6 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
     if (this.unsubscribe) this.unsubscribe();
   }
 
-  // Orden lógico de fases
   ordenarFases(a: string, b: string): number {
     const orden = [
       'final',
@@ -89,5 +110,96 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
 
   getPartidosPorGrupo(grupo: string): Partido[] {
     return this.partidos.filter(p => p.fase === 'grupo' && p.grupo === grupo);
+  }
+
+  // --- NUEVO: Lógica para avanzar de fase ---
+
+  get esAdmin(): boolean {
+    return !!(this.user && this.torneo && this.torneo.creadoPor && this.torneo.creadoPor.uid === this.user.uid);
+  }
+
+  get gruposFinalizados(): boolean {
+    // Todos los partidos de grupo deben estar en estado 'finalizado'
+    return this.partidos
+      .filter(p => p.fase === 'grupo')
+      .every(p => p.estado === 'finalizado');
+  }
+
+  get siguienteFaseDisponible(): boolean {
+    // Solo muestra el botón si no hay partidos de la siguiente fase
+    const haySemis = this.partidos.some(p => p.fase === 'semifinal');
+    const hayFinal = this.partidos.some(p => p.fase === 'final');
+    if (this.gruposFinalizados && !haySemis && !hayFinal) return true;
+    if (this.gruposFinalizados && haySemis && !hayFinal) {
+      // Si ya hay semis pero no final, permite crear la final
+      const semisFinalizadas = this.partidos.filter(p => p.fase === 'semifinal').every(p => p.estado === 'finalizado');
+      return semisFinalizadas;
+    }
+    return false;
+  }
+
+  async crearSiguienteFase() {
+    // Detectar si toca semifinal o final
+    const haySemis = this.partidos.some(p => p.fase === 'semifinal');
+    const arbitros = this.torneo?.arbitros || [];
+    let arbitroIndex = 0;
+
+    if (!haySemis) {
+      // Crear semifinales con los ganadores de grupo
+      const ganadoresGrupo = this.partidos
+        .filter(p => p.fase === 'grupo' && p.ganador)
+        .map(p => p.ganador)
+       .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i); // únicos
+
+      if (ganadoresGrupo.length < 4) return; // Solo crea semis si hay 4 ganadores
+
+      // Emparejamiento simple: 1vs2 y 3vs4
+      const emparejamientos = [
+        [ganadoresGrupo[0], ganadoresGrupo[1]],
+        [ganadoresGrupo[2], ganadoresGrupo[3]]
+      ];
+
+      for (const pareja of emparejamientos) {
+        await addDoc(collection(this.firestore, 'partidos'), {
+          torneoId: this.torneoId,
+          jugadores: pareja,
+          arbitro: arbitros.length > 0 ? arbitros[arbitroIndex % arbitros.length] : null,
+          estado: 'esperando',
+          setsGanados: [0, 0],
+          puntosActuales: [0, 0],
+          lado: [0, 1],
+          ganador: null,
+          creadoEn: new Date(),
+          fase: 'semifinal'
+        });
+        arbitroIndex++;
+      }
+    } else {
+      // Crear final con los ganadores de las semis
+      const ganadoresSemis = this.partidos
+        .filter(p => p.fase === 'semifinal' && p.ganador)
+        .map(p => p.ganador)
+        .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i); // únicos
+
+      if (ganadoresSemis.length < 2) return;
+
+      await addDoc(collection(this.firestore, 'partidos'), {
+        torneoId: this.torneoId,
+        jugadores: [ganadoresSemis[0], ganadoresSemis[1]],
+        arbitro: arbitros.length > 0 ? arbitros[arbitroIndex % arbitros.length] : null,
+        estado: 'esperando',
+        setsGanados: [0, 0],
+        puntosActuales: [0, 0],
+        lado: [0, 1],
+        ganador: null,
+        creadoEn: new Date(),
+        fase: 'final'
+      });
+    }
+
+    // Opcional: actualiza el estado del torneo
+    await updateDoc(doc(this.firestore, 'torneos', this.torneoId), {
+      estado: 'en_juego'
+    });
   }
 }

@@ -19,12 +19,26 @@
         <div *ngIf="partido.arbitro">
           <b>Árbitro:</b> {{ partido.arbitro.nombre }} {{ partido.arbitro.apellido }}
         </div>
-        <div *ngIf="!partido.arbitro && esArbitro(partido)">
-          <ion-button size="small" (click)="asignarseComoArbitro(partido)">Asignarme como árbitro</ion-button>
-        </div>
-        <ion-button expand="block" color="primary" (click)="irASala(partido)">
-          {{ esJugador(partido) ? 'Unirse' : 'Arbitrar' }}
+        <!-- Botón para árbitro -->
+        <ion-button
+          expand="block"
+          color="primary"
+          (click)="irASala(partido)"
+          *ngIf="esArbitro(partido)">
+          Ir al partido
         </ion-button>
+        <!-- Botón para jugador, solo habilitado si hay árbitro asignado -->
+        <ion-button
+          expand="block"
+          color="primary"
+          (click)="irASala(partido)"
+          [disabled]="!partido.arbitro"
+          *ngIf="esJugador(partido)">
+          Ir al partido
+        </ion-button>
+        <ion-text color="danger" *ngIf="esJugador(partido) && !partido.arbitro">
+          Esperando a que se asigne un árbitro a este partido.
+        </ion-text>
       </ion-card-content>
     </ion-card>
   </ion-list>
