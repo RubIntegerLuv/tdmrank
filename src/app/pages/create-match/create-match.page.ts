@@ -14,7 +14,7 @@ import { MenuController } from '@ionic/angular';
 export class CreateMatchPage implements OnInit {
 
   tipoPartido: 'individual' | 'dobles' = 'individual';
-  cantidadSets: number = 3;
+  cantidadSets: number = 5;
   codigoPartido: string = '';
   jugadores: any[] = [];
   partidoId: string = '';
@@ -47,7 +47,7 @@ export class CreateMatchPage implements OnInit {
           const data = partidoDocSnap.data();
           this.jugadores = data['jugadores'] || [];
           this.tipoPartido = data['tipo'] || 'individual';
-          this.cantidadSets = data['cantidadSets'] || 3;
+          this.cantidadSets = data['cantidadSets'] || 5;
           this.partidoYaExiste = true;
 
           // Escucha en tiempo real los jugadores conectados

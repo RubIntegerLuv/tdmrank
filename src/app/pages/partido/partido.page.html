@@ -51,6 +51,11 @@
           Finalizar partido
         </ion-button>
       </div>
+      <div *ngIf="!esArbitro" style="text-align: center; margin-top: 24px;">
+        <ion-button color="medium" expand="block" (click)="salirComoEspectador()">
+          Salir
+        </ion-button>
+      </div>
     </div>
   </div>
 </ion-content>

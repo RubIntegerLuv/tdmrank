@@ -10,6 +10,8 @@ export interface Torneo {
   creadoPor: Jugador;
   creadoEn: Date;
   arbitros?: Jugador[];
+  faseActual?: string; // Fase actual del torneo (ej: "fase de grupos", "cuartos", "semifinal", "final")
+  fecha?: Date; // Fecha del torneo
 }
 
 export interface Jugador {

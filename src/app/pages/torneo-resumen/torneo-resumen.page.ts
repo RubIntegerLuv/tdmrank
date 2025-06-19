@@ -42,6 +42,7 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
   }
 
   async cargarTorneo() {
+    if (!this.torneoId) return;
     const torneoDoc = doc(this.firestore, 'torneos', this.torneoId);
     const snap = await getDoc(torneoDoc);
     this.torneo = snap.data() as Torneo;
@@ -112,8 +113,6 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
     return this.partidos.filter(p => p.fase === 'grupo' && p.grupo === grupo);
   }
 
-  // --- NUEVO: Lógica para avanzar de fase ---
-
   get esAdmin(): boolean {
     return !!(this.user && this.torneo && this.torneo.creadoPor && this.torneo.creadoPor.uid === this.user.uid);
   }
@@ -138,68 +137,114 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
     return false;
   }
 
-  async crearSiguienteFase() {
-    // Detectar si toca semifinal o final
-    const haySemis = this.partidos.some(p => p.fase === 'semifinal');
-    const arbitros = this.torneo?.arbitros || [];
+  /** Crea partidos de una fase y actualiza la fase del torneo */
+  async crearPartidosFase(
+    fase: string,
+    emparejamientos: any[][],
+    arbitros: any[]
+  ) {
     let arbitroIndex = 0;
-
-    if (!haySemis) {
-      // Crear semifinales con los ganadores de grupo
-      const ganadoresGrupo = this.partidos
-        .filter(p => p.fase === 'grupo' && p.ganador)
-        .map(p => p.ganador)
-       .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i); // únicos
-
-      if (ganadoresGrupo.length < 4) return; // Solo crea semis si hay 4 ganadores
-
-      // Emparejamiento simple: 1vs2 y 3vs4
-      const emparejamientos = [
-        [ganadoresGrupo[0], ganadoresGrupo[1]],
-        [ganadoresGrupo[2], ganadoresGrupo[3]]
-      ];
-
-      for (const pareja of emparejamientos) {
-        await addDoc(collection(this.firestore, 'partidos'), {
-          torneoId: this.torneoId,
-          jugadores: pareja,
-          arbitro: arbitros.length > 0 ? arbitros[arbitroIndex % arbitros.length] : null,
-          estado: 'esperando',
-          setsGanados: [0, 0],
-          puntosActuales: [0, 0],
-          lado: [0, 1],
-          ganador: null,
-          creadoEn: new Date(),
-          fase: 'semifinal'
-        });
-        arbitroIndex++;
-      }
-    } else {
-      // Crear final con los ganadores de las semis
-      const ganadoresSemis = this.partidos
-        .filter(p => p.fase === 'semifinal' && p.ganador)
-        .map(p => p.ganador)
-        .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i); // únicos
-
-      if (ganadoresSemis.length < 2) return;
-
+    for (const pareja of emparejamientos) {
       await addDoc(collection(this.firestore, 'partidos'), {
         torneoId: this.torneoId,
-        jugadores: [ganadoresSemis[0], ganadoresSemis[1]],
-        arbitro: arbitros.length > 0 ? arbitros[arbitroIndex % arbitros.length] : null,
+        jugadores: pareja,
+        arbitro: arbitros.length > 0 ? arbitros[arbitroIndex++ % arbitros.length] : null,
         estado: 'esperando',
         setsGanados: [0, 0],
         puntosActuales: [0, 0],
         lado: [0, 1],
         ganador: null,
         creadoEn: new Date(),
-        fase: 'final'
+        fase
       });
     }
-
-    // Opcional: actualiza el estado del torneo
+    // Actualiza la fase actual del torneo
     await updateDoc(doc(this.firestore, 'torneos', this.torneoId), {
-      estado: 'en_juego'
+      estado: 'en_juego',
+      faseActual: fase
     });
+  }
+
+  async crearSiguienteFase() {
+    const arbitros = this.torneo?.arbitros || [];
+    // 1. Obtener todos los grupos y sus partidos
+    const grupos = this.grupos;
+    const partidosGrupo = this.partidos.filter(p => p.fase === 'grupo');
+
+    // 2. Para cada grupo, calcular la tabla de posiciones
+    const clasificadosPorGrupo: { primero: any, segundo: any }[] = [];
+    for (const grupo of grupos) {
+      const partidosDelGrupo = partidosGrupo.filter(p => p.grupo === grupo);
+      const jugadoresGrupo: { [uid: string]: { jugador: any, sets: number, partidosGanados: number } } = {};
+
+      partidosDelGrupo.forEach(p => {
+        p.jugadores.forEach(j => {
+          if (!jugadoresGrupo[j.uid]) {
+            jugadoresGrupo[j.uid] = { jugador: j, sets: 0, partidosGanados: 0 };
+          }
+        });
+      });
+
+      partidosDelGrupo.forEach(p => {
+        if (p.setsGanados && Array.isArray(p.setsGanados) && p.setsGanados.length === 2) {
+          jugadoresGrupo[p.jugadores[0].uid].sets += p.setsGanados[0];
+          jugadoresGrupo[p.jugadores[1].uid].sets += p.setsGanados[1];
+          if (p.ganador && p.ganador.uid) {
+            jugadoresGrupo[p.ganador.uid].partidosGanados += 1;
+          }
+        }
+      });
+
+      const ordenados = Object.values(jugadoresGrupo).sort((a, b) => {
+        if (b.sets !== a.sets) return b.sets - a.sets;
+        return b.partidosGanados - a.partidosGanados;
+      });
+
+      if (ordenados.length >= 2) {
+        clasificadosPorGrupo.push({
+          primero: ordenados[0].jugador,
+          segundo: ordenados[1].jugador
+        });
+      }
+    }
+
+    // 3. Emparejar cruzado
+    const emparejamientos: any[][] = [];
+    let nuevaFase = '';
+    if (clasificadosPorGrupo.length === 2) {
+      emparejamientos.push([clasificadosPorGrupo[0].primero, clasificadosPorGrupo[1].segundo]);
+      emparejamientos.push([clasificadosPorGrupo[1].primero, clasificadosPorGrupo[0].segundo]);
+      nuevaFase = 'semifinal';
+    } else if (clasificadosPorGrupo.length > 2) {
+      for (let i = 0; i < clasificadosPorGrupo.length; i++) {
+        const siguiente = (i + 1) % clasificadosPorGrupo.length;
+        emparejamientos.push([clasificadosPorGrupo[i].primero, clasificadosPorGrupo[siguiente].segundo]);
+      }
+      nuevaFase = emparejamientos.length === 4 ? 'cuartos' : (emparejamientos.length === 2 ? 'semifinal' : 'final');
+    } else {
+      return;
+    }
+
+    // 4. Crear partidos de la siguiente fase si no existen
+    const yaExisten = this.partidos.some(p => p.fase === nuevaFase);
+    if (!yaExisten) {
+      await this.crearPartidosFase(nuevaFase, emparejamientos, arbitros);
+      return;
+    }
+
+    // 5. Si ya hay semifinales y están finalizadas, crea la final (solo si no existe)
+    if (nuevaFase === 'semifinal') {
+      const semis = this.partidos.filter(p => p.fase === 'semifinal');
+      const semisFinalizadas = semis.length === 2 && semis.every(p => p.estado === 'finalizado' && p.ganador);
+      const yaHayFinal = this.partidos.some(p => p.fase === 'final');
+      if (semisFinalizadas && !yaHayFinal) {
+        const ganadoresSemis = semis.map(p => p.ganador)
+          .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i);
+        if (ganadoresSemis.length === 2) {
+          await this.crearPartidosFase('final', [ganadoresSemis], arbitros);
+        }
+      }
+      return;
+    }
   }
 }

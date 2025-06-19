@@ -22,7 +22,7 @@
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="joinMatch()">
         Unirse a Partido
       </ion-item>
-      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro'" (click)="joinTournament()">
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro' || usuario?.tipoUsuario === 'administrador'" (click)="joinTournament()">
         Unirse a Torneo
       </ion-item>
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
@@ -66,9 +66,26 @@
         </div>
       </div>
       <div class="info-box">
-        <!-- Aquí puedes agregar noticias -->
-        <h2>Noticias</h2>
-        <p>Próximamente...</p>
+        <h2>Partidos en vivo</h2>
+        <ion-card *ngIf="partidosEnVivo.length === 0">
+          <ion-card-content>No hay partidos en juego.</ion-card-content>
+        </ion-card>
+        <ion-card *ngFor="let partido of partidosEnVivo">
+          <ion-card-header>
+            <ion-card-title>
+              {{ partido.jugadores?.[0]?.nombre || 'Jugador 1' }}
+              vs
+              {{ partido.jugadores?.[1]?.nombre || 'Jugador 2' }}
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p><strong>Sets:</strong> {{ partido.setsGanados?.[0] || 0 }} - {{ partido.setsGanados?.[1] || 0 }}</p>
+            <p><strong>Puntos:</strong> {{ partido.puntosActuales?.[0] || 0 }} - {{ partido.puntosActuales?.[1] || 0 }}</p>
+            <ion-button (click)="verPartidoComoEspectador(partido.id)" expand="block" color="primary">
+              Ver
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
       </div>
       <div class="info-box">
         <!-- Aquí puedes agregar noticias -->

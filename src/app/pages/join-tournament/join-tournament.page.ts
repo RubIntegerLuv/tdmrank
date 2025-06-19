@@ -65,7 +65,7 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
     }
 
     const torneoDoc = querySnapshot.docs[0];
-    this.torneoDocId = torneoDoc.id; // UID del torneo
+    this.torneoDocId = torneoDoc.id;
     const torneoDocRef = torneoDoc.ref;
     const torneoData = torneoDoc.data();
 
@@ -77,6 +77,7 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
 
     const esJugador = this.user.tipoUsuario === 'jugador';
     const esArbitro = this.user.tipoUsuario === 'arbitro';
+    const esAdmin = this.user.tipoUsuario === 'admin' || this.user.tipoUsuario === 'administrador';
 
     const yaJugador = this.jugadores.some((j: any) => j.uid === this.user!.uid);
     const yaArbitro = this.arbitros.some((a: any) => a.uid === this.user!.uid);
@@ -93,8 +94,14 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
       this.suscribirCambiosTorneo();
       return;
     }
+    if (esAdmin && yaJugador) {
+      this.successMsg = 'Ya estás inscrito en este torneo como administrador.';
+      this.esperando = !this.torneoIniciado;
+      this.suscribirCambiosTorneo();
+      return;
+    }
 
-    if (esJugador) {
+    if (esJugador || esAdmin) {
       this.jugadores.push({
         uid: this.user.uid,
         nombre: this.user.nombre,
@@ -102,7 +109,9 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
         email: this.user.email
       });
       await updateDoc(torneoDocRef, { jugadores: this.jugadores });
-      this.successMsg = '¡Te has unido al torneo como jugador!';
+      this.successMsg = esAdmin
+        ? '¡Te has unido al torneo como administrador!'
+        : '¡Te has unido al torneo como jugador!';
     } else if (esArbitro) {
       this.arbitros.push({
         uid: this.user.uid,

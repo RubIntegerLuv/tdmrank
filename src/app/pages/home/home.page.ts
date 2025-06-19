@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MenuController } from '@ionic/angular';
-import { collection, getDocs, Firestore } from '@angular/fire/firestore';
+import { collection, getDocs, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
 
 interface RankingJugador {
   nombre: string;
@@ -24,6 +24,7 @@ export class HomePage implements OnInit {
   rankingJugadores: any[] = [];
   top5Ranking: any[] = [];
   ranking: any[] = [];
+  partidosEnVivo: any[] = [];
 
 
   constructor(private router: Router,
@@ -36,7 +37,24 @@ export class HomePage implements OnInit {
     this.usuario = await this.authService.getCurrentUserData();
     await this.cargarRankingJugadores();
     this.top5Ranking = this.rankingJugadores.slice(0, 5);
-    console.log('Top 5 Ranking:', this.top5Ranking);
+    this.escucharPartidosEnVivo();
+  }
+
+   escucharPartidosEnVivo() {
+    const partidosRef = collection(this.firestore, 'partidos');
+    const q = query(partidosRef, where('estado', '==', 'en_juego'));
+
+    onSnapshot(q, (snapshot) => {
+      this.partidosEnVivo = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    });
+  }
+
+  verPartidoComoEspectador(partidoId: string) {
+    sessionStorage.setItem('rolTemporal', this.usuario.tipoUsuario); // Guardamos el rol original
+    this.router.navigate(['/partido', partidoId]);
   }
 
   async logout() {

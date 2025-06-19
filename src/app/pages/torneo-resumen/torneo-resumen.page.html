@@ -6,6 +6,13 @@
     </ion-button>
   </div>
 
+  <!-- Mostrar fase actual -->
+  <div *ngIf="torneo?.faseActual" style="text-align:center; margin-bottom: 12px;">
+    <ion-chip color="primary">
+      Fase actual: {{ torneo?.faseActual | titlecase }}
+    </ion-chip>
+  </div>
+
   <!-- Fases de eliminación directa (final, semi, cuartos, etc.) -->
   <ng-container *ngFor="let fase of fases">
     <h2>{{ fase | titlecase }}</h2>
@@ -13,7 +20,9 @@
       <ion-card *ngFor="let partido of getPartidosPorFase(fase)">
         <ion-card-header>
           <ion-card-title>
-            {{ partido.jugadores[0].nombre }} vs {{ partido.jugadores[1].nombre }}
+            {{ partido.jugadores[0].nombre }} {{ partido.jugadores[0].apellido }}
+            vs
+            {{ partido.jugadores[1].nombre }} {{ partido.jugadores[1].apellido }}
           </ion-card-title>
           <ion-card-subtitle>
             Estado: {{ partido.estado | titlecase }}
@@ -45,7 +54,9 @@
     <ion-card *ngFor="let partido of getPartidosPorGrupo(grupo)">
       <ion-card-header>
         <ion-card-title>
-          {{ partido.jugadores[0].nombre || partido.jugadores[0].apellido }} vs {{ partido.jugadores[1].nombre || partido.jugadores[1].apellido }}
+          {{ partido.jugadores[0].nombre }} {{ partido.jugadores[0].apellido }}
+          vs
+          {{ partido.jugadores[1].nombre }} {{ partido.jugadores[1].apellido }}
         </ion-card-title>
         <ion-card-subtitle>
           Estado: {{ partido.estado | titlecase }}

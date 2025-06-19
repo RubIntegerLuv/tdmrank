@@ -37,43 +37,43 @@ export class PartidoPage implements OnInit {
   async ngOnInit() {
     this.partidoId = this.route.snapshot.paramMap.get('id')!;
     const partidoDoc = doc(this.firestore, `partidos/${this.partidoId}`);
+
     onSnapshot(partidoDoc, async (snapshot) => {
       const data = snapshot.data();
       if (data) {
         this.partido = data;
         this.jugadores = data['jugadores'] || [];
         this.arbitro = data['arbitro'] || null;
-        this.setsGanados = Array.isArray(data['setsGanados']) && data['setsGanados'].length === 2
-          ? data['setsGanados']
-          : [0, 0];
-        this.puntosActuales = Array.isArray(data['puntosActuales']) && data['puntosActuales'].length === 2
-          ? data['puntosActuales']
-          : [0, 0];
-        this.lado = Array.isArray(data['lado']) && data['lado'].length === 2
-          ? data['lado']
-          : [0, 1];
+        this.setsGanados = Array.isArray(data['setsGanados']) ? data['setsGanados'] : [0, 0];
+        this.puntosActuales = Array.isArray(data['puntosActuales']) ? data['puntosActuales'] : [0, 0];
+        this.lado = Array.isArray(data['lado']) ? data['lado'] : [0, 1];
         this.cantidadSets = typeof data['cantidadSets'] === 'number' ? data['cantidadSets'] : 3;
         this.ganador = data['ganador'] || null;
         this.historial = data['historial'] || [];
 
-        // Validación defensiva para emptySets
-        const sets0 = typeof this.setsGanados[0] === 'number' ? this.setsGanados[0] : 0;
-        const sets1 = typeof this.setsGanados[1] === 'number' ? this.setsGanados[1] : 0;
         const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
         this.emptySets = [
-          Array(Math.max(0, setsParaGanar - sets0)),
-          Array(Math.max(0, setsParaGanar - sets1))
+          Array(Math.max(0, setsParaGanar - this.setsGanados[0])),
+          Array(Math.max(0, setsParaGanar - this.setsGanados[1]))
         ];
 
         const user = await this.authService.getCurrentUserData();
-        this.esArbitro = !!(
+
+        const rolTemporal = sessionStorage.getItem('rolTemporal');
+        const esEspectador = !!rolTemporal;
+
+        this.esArbitro = !esEspectador &&
           user &&
           this.arbitro &&
           user["uid"] === this.arbitro["uid"] &&
-          user["tipoUsuario"] === "arbitro"
-        );
+          user["tipoUsuario"] === "arbitro";
       }
     });
+  }
+
+  salirComoEspectador() {
+    sessionStorage.removeItem('rolTemporal'); // Restauramos el estado original
+    this.router.navigate(['/home']);
   }
 
   async sumarPunto(jugador: number) {
