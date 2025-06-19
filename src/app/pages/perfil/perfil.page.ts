@@ -2,6 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc, setDoc } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
 
+interface RankingJugador {
+  uid: string;
+  nombre: string;
+  apellido: string;
+  partidosGanados: number;
+  partidosJugados: number;
+}
+
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.page.html',
@@ -16,6 +24,8 @@ export class PerfilPage implements OnInit {
   porcentajeVictorias: number = 0;
   porcentajeVictoriasMes: number = 0;
   historialPartidos: any[] = [];
+  ranking: any[] = [];
+  posicionRanking: number | null = null;
 
   constructor(
     private firestore: Firestore,
@@ -31,6 +41,8 @@ export class PerfilPage implements OnInit {
       console.log('Después de cargarEstadisticas');
       await this.cargarHistorialPartidos();
       console.log('Después de cargarHistorialPartidos');
+      await this.cargarRankingPersonal();
+      console.log('Después de cargarRankingPersonal');
     } catch (e) {
       console.error('Error en ngOnInit:', e);
     }
@@ -135,6 +147,54 @@ export class PerfilPage implements OnInit {
       }
     });
     console.log('Historial generado:', this.historialPartidos);
+  }
+
+  async cargarRankingPersonal() {
+    // 1. Obtén todos los usuarios
+    const usersRef = collection(this.firestore, 'users');
+    const usersSnap = await getDocs(usersRef);
+
+    // 2. Crea un mapa de usuarios
+    const jugadoresMap = new Map<string, any>();
+    usersSnap.forEach((docSnap) => {
+      const data = docSnap.data();
+      jugadoresMap.set(docSnap.id, {
+        uid: docSnap.id,
+        nombre: data['nombre'],
+        apellido: data['apellido'],
+        partidosGanados: 0,
+        partidosJugados: 0
+      });
+    });
+
+    // 3. Recorre todos los partidos y cuenta jugados/ganados
+    const partidosRef = collection(this.firestore, 'partidos');
+    const partidosSnap = await getDocs(partidosRef);
+
+    partidosSnap.forEach((docSnap) => {
+      const data = docSnap.data();
+      const jugadores = data['jugadores'] || [];
+      const ganadorUid = data['ganadorUid'];
+
+      jugadores.forEach((jugador: any) => {
+        const jugadorData = jugadoresMap.get(jugador.uid);
+        if (jugadorData) {
+          jugadorData.partidosJugados += 1;
+          if (ganadorUid === jugador.uid) {
+            jugadorData.partidosGanados += 1;
+          }
+        }
+      });
+    });
+
+    // 4. Convierte el mapa a array y ordena
+    this.ranking = Array.from(jugadoresMap.values())
+      .sort((a, b) => b.partidosGanados - a.partidosGanados);
+
+    // 5. Busca la posición del usuario actual
+    const miUid = this.jugador.uid;
+    const index = this.ranking.findIndex(j => j.uid === miUid);
+    this.posicionRanking = index !== -1 ? index + 1 : null;
   }
 
   async guardarPaleta() {

@@ -28,7 +28,7 @@
       <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
         Perfil
       </ion-item>
-      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro' || usuario?.tipoUsuario === 'administrador'" (click)="goToRanking()">
+      <ion-item button (click)="goToRanking()">
         Ranking
       </ion-item>
       <ion-item button (click)="logout()">
@@ -41,7 +41,30 @@
 <ion-content id="main-content">
   <app-header></app-header>
   <div class="content-container">
-    <div class="info-grid">
+      <div class="info-box">
+        <!-- Aquí puedes agregar el top 5 del ranking -->
+          <h2 class="ranking-titulo">Top 5 Ranking</h2>
+          <table class="ranking-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Jugador</th>
+                <th>Ganados</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let jugador of ranking.slice(0,5); let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ jugador.nombre }} {{ jugador.apellido }}</td>
+                <td>{{ jugador.partidosGanados }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="ranking.length === 0" class="ranking-vacio">
+            No hay jugadores registrados.
+          </div>
+        </div>
+      </div>
       <div class="info-box">
         <!-- Aquí puedes agregar noticias -->
         <h2>Noticias</h2>
@@ -57,11 +80,4 @@
         <h2>Ultimo Torneo</h2>
         <p>Próximamente...</p>
       </div>
-      <div class="info-box">
-        <!-- Aquí puedes agregar el top 5 del ranking -->
-        <h2>Top 5 Ranking</h2>
-        <p>Próximamente...</p>
-      </div>
-    </div>
-  </div>
 </ion-content>
