@@ -70,10 +70,12 @@
 
     <div class="perfil-ranking">
       <h3>Ranking</h3>
-      <div class="ranking-placeholder">
-        <!-- Aquí irá el ranking de jugadores -->
-        <p>Próximamente podrás ver tu posición en el ranking.</p>
+      <div *ngIf="posicionRanking; else sinRanking">
+        <p>Tu posición en el ranking: <strong>#{{ posicionRanking }}</strong></p>
       </div>
+      <ng-template #sinRanking>
+        <p>No tienes posición en el ranking.</p>
+      </ng-template>
     </div>
   </div>
 </ion-content>
