@@ -1,4 +1,24 @@
-<ion-content>
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
+  <ion-header>
+    <ion-toolbar color="#67092B">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <p>El partido debe terminar para poder salir</p>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-content id="main-content">
   <app-header></app-header>
   <div class="match-container" *ngIf="partido">
     <div class="players-row">
@@ -52,9 +72,11 @@
         </ion-button>
       </div>
       <div *ngIf="!esArbitro" style="text-align: center; margin-top: 24px;">
-        <ion-button color="medium" expand="block" (click)="salirComoEspectador()">
-          Salir
-        </ion-button>
+        <div *ngIf="!esArbitro" style="padding: 12px; text-align: right;">
+          <ion-button size="small" color="medium" (click)="salirComoEspectador()">
+            Salir
+          </ion-button>
+        </div>
       </div>
     </div>
   </div>

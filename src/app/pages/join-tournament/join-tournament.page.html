@@ -13,45 +13,45 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item button (click)="goHome()">
-        Ir a Inicio
-      </ion-item>
-      <ion-item button (click)="logout()">
-        Cerrar Sesión
-      </ion-item>
+      <ion-item button (click)="goHome()">Ir a Inicio</ion-item>
+      <ion-item button (click)="logout()">Cerrar Sesión</ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>
 
-<ion-content>
+<ion-content id="main-content">
   <app-header></app-header>
-  <div class="join-tournament-container">
-    <ion-item>
-      <ion-input placeholder="Código" [(ngModel)]="codigoTorneo"></ion-input>
-    </ion-item>
-    <ion-button expand="block" (click)="unirseATorneo()">Unirse al Torneo</ion-button>
-    <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
-    <ion-text color="success" *ngIf="successMsg">{{ successMsg }}</ion-text>
+  <div class="content-container">
+    <div class="form-container">
+      <ion-item lines="none" class="custom-input">
+        <ion-input placeholder="Código del torneo" [(ngModel)]="codigoTorneo"></ion-input>
+      </ion-item>
+      <ion-button expand="block" class="unirse-torneo" (click)="unirseATorneo()">
+        Unirse al Torneo
+      </ion-button>
+      <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
+      <ion-text color="success" *ngIf="successMsg">{{ successMsg }}</ion-text>
 
-    <div *ngIf="successMsg && esperando">
-      <h2>Esperando a que el administrador inicie el torneo...</h2>
-      <ion-list>
-        <ion-list-header>Jugadores inscritos ({{ jugadores.length }})</ion-list-header>
-        <ion-item *ngFor="let jugador of jugadores">
-          {{ jugador.nombre }} {{ jugador.apellido }}
-        </ion-item>
-      </ion-list>
-      <ion-list>
-        <ion-list-header>Árbitros inscritos ({{ arbitros.length }})</ion-list-header>
-        <ion-item *ngFor="let arbitro of arbitros">
-          {{ arbitro.nombre }} {{ arbitro.apellido }}
-        </ion-item>
-      </ion-list>
-    </div>
-    <div *ngIf="successMsg && !esperando">
-      <ion-text color="success">
-        ¡El torneo ha comenzado! Redirigiendo...
-      </ion-text>
+      <div *ngIf="successMsg && esperando">
+        <h2>Esperando a que el administrador inicie el torneo...</h2>
+        <ion-list>
+          <ion-list-header>Jugadores inscritos ({{ jugadores.length }})</ion-list-header>
+          <ion-item *ngFor="let jugador of jugadores">
+            {{ jugador.nombre }} {{ jugador.apellido }}
+          </ion-item>
+        </ion-list>
+        <ion-list>
+          <ion-list-header>Árbitros inscritos ({{ arbitros.length }})</ion-list-header>
+          <ion-item *ngFor="let arbitro of arbitros">
+            {{ arbitro.nombre }} {{ arbitro.apellido }}
+          </ion-item>
+        </ion-list>
+      </div>
+      <div *ngIf="successMsg && !esperando">
+        <ion-text color="success">
+          ¡El torneo ha comenzado! Redirigiendo...
+        </ion-text>
+      </div>
     </div>
   </div>
 </ion-content>

@@ -4,6 +4,7 @@ import { Firestore, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { User } from '../../models/user.model';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-partido',
@@ -31,7 +32,8 @@ export class PartidoPage implements OnInit {
     private route: ActivatedRoute,
     private firestore: Firestore,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private menuCtrl: MenuController
   ) {}
 
   async ngOnInit() {
@@ -139,11 +141,11 @@ export class PartidoPage implements OnInit {
     // ¿Alguien ganó el partido?
     const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
     if (setsGanados[0] === setsParaGanar) {
-      ganador = this.jugadores[lado[0]];
+      ganador = this.jugadores[lado[0]].nombre || this.jugadores[lado[0]].apellido
       ganadorUid = this.jugadores[lado[0]].uid;
     }
     if (setsGanados[1] === setsParaGanar) {
-      ganador = this.jugadores[lado[1]];
+      ganador = this.jugadores[lado[1]].nombre || this.jugadores[lado[1]].apellido;
       ganadorUid = this.jugadores[lado[1]].uid;
     }
 

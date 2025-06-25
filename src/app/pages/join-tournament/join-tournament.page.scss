@@ -1,28 +1,94 @@
-ion-content {
-  --background: #f4f4f4;
+ion-content#main-content {
+  --background: #f6f6f6;
   font-family: 'Arial', sans-serif;
   height: 100vh;
 }
-
-.join-tournament-container {
-  padding: 24px;
-  max-width: 320px;
-  margin: 0 auto;
+.header {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 48px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px; /* padding completo */
+  width: 100%; /* ancho 100% */
+  background-color: #A20E43;
+  color: white;
 }
 
-ion-item {
+.menu-button {
+  --background: transparent;
+  --box-shadow: none;
+  --color: #67092B;
+  font-size: 24px;
+}
+
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding-top: 32px;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 32px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+ion-item.custom-input {
+  --inner-padding-end: 0;
+  --border-style: none;
   --background: #e0e0e0;
   border-radius: 4px;
 }
 
-ion-button {
+.custom-input ion-input,
+.custom-input ion-select,
+.custom-input ion-datetime {
+  --color: #333;
+  padding: 10px;
+}
+
+.unirse-torneo {
+  margin-bottom: 18px;
   --background: #A20E43;
-  --color: white;
+  --color: #fff;
   --border-radius: 8px;
   font-weight: bold;
-  text-transform: uppercase;
+  font-size: 16px;
 }
+
+.unirse-torneo:hover {
+  --background: #7a0a2e;
+}
+
+ion-text[color="danger"], ion-text[color="success"] {
+  margin-bottom: 12px;
+  display: block;
+  text-align: center;
+}
+
+.custom-menu {
+  --width: 60vw;
+  --background: #A20E43;
+}
+

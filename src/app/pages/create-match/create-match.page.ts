@@ -33,11 +33,9 @@ export class CreateMatchPage implements OnInit {
   async ngOnInit() {
     this.arbitro = await this.authService.getCurrentUserData();
 
-    // Verifica si viene un código por query param
     this.route.queryParams.subscribe(async params => {
       if (params['codigo']) {
         this.codigoPartido = params['codigo'];
-        // Busca el partido por código
         const partidosRef = collection(this.firestore, 'partidos');
         const q = query(partidosRef, where('codigo', '==', this.codigoPartido));
         const querySnap = await getDocs(q);
@@ -50,7 +48,6 @@ export class CreateMatchPage implements OnInit {
           this.cantidadSets = data['cantidadSets'] || 5;
           this.partidoYaExiste = true;
 
-          // Escucha en tiempo real los jugadores conectados
           const partidoDoc = doc(this.firestore, `partidos/${this.partidoId}`);
           onSnapshot(partidoDoc, (snapshot) => {
             const data = snapshot.data();
@@ -84,7 +81,6 @@ export class CreateMatchPage implements OnInit {
     this.partidoId = partidoRef.id;
     this.partidoYaExiste = true;
 
-    // Escucha en tiempo real los jugadores conectados
     const partidoDoc = doc(this.firestore, `partidos/${this.partidoId}`);
     onSnapshot(partidoDoc, (snapshot) => {
       const data = snapshot.data();

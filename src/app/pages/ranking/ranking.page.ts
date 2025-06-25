@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Firestore, collection, getDocs } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { MenuController } from '@ionic/angular';
+
 
 interface RankingJugador {
   nombre: string;
@@ -17,8 +21,14 @@ interface RankingJugador {
 })
 export class RankingPage implements OnInit {
   ranking: RankingJugador[] = [];
+  usuario: any;
 
-  constructor(private firestore: Firestore) {}
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+    private menuCtrl: MenuController,
+    private router: Router
+  ) {}
 
   async ngOnInit() {
     await this.cargarRanking();
@@ -65,5 +75,33 @@ export class RankingPage implements OnInit {
     // 4. Convierte el mapa a array y ordena
     this.ranking = Array.from(jugadoresMap.values())
       .sort((a, b) => b.partidosGanados - a.partidosGanados);
+  }
+
+   async logout() {
+    try {
+      await this.authService.logout();
+      await this.menuCtrl.close('main-menu');
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error cerrando sesión:', error);
+    }
+  }
+  createTourtnament() {
+    this.router.navigate(['/create-tourtnament']);
+  }
+  createMatch() {
+    this.router.navigate(['/create-match']);
+  }
+  joinMatch() {
+    this.router.navigate(['/join-match']);
+  }
+  goToPerfil() {
+    this.router.navigate(['/perfil']);
+  }
+  joinTournament() {
+    this.router.navigate(['/join-tournament']);
+  }
+  goToRanking() {
+    this.router.navigate(['/ranking']);
   }
 }

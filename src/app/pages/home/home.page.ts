@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, } from '../../services/auth.service';
 import { MenuController } from '@ionic/angular';
-import { collection, getDocs, Firestore, onSnapshot, query, where} from '@angular/fire/firestore';
+import { collection, getDocs, Firestore, onSnapshot, query, where, } from '@angular/fire/firestore';
+import { LoadingController, ToastController } from '@ionic/angular';
+
 
 interface RankingJugador {
   nombre: string;
@@ -30,7 +32,9 @@ export class HomePage implements OnInit {
   constructor(private router: Router,
     private authService: AuthService,
     private menuCtrl: MenuController,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController
   ) {}
 
   async ngOnInit() {
@@ -62,6 +66,7 @@ export class HomePage implements OnInit {
       await this.authService.logout();
       await this.menuCtrl.close('main-menu');
       this.router.navigate(['/login']);
+      this.presentToast('Sesión cerrada correctamente.');
     } catch (error) {
       console.error('Error cerrando sesión:', error);
     }
@@ -126,5 +131,15 @@ export class HomePage implements OnInit {
     // 4. Convierte el mapa a array y ordena
     this.ranking = Array.from(jugadoresMap.values())
       .sort((a, b) => b.partidosGanados - a.partidosGanados);
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'bottom',
+      color: 'danger'
+    });
+    await toast.present();
   }
 }

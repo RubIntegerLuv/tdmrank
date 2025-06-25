@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-torneo',
@@ -11,7 +13,12 @@ import { filter } from 'rxjs/operators';
 export class TorneoPage implements OnInit {
   vistaSeleccionada = 'mis-partidos';
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private menuCtrl: MenuController
+  ) {}
 
   ngOnInit() {
     this.router.events
@@ -22,6 +29,20 @@ export class TorneoPage implements OnInit {
           this.vistaSeleccionada = child.snapshot.url[0].path;
         }
       });
+  }
+
+  async logout() {
+    try {
+      await this.authService.logout();
+      await this.menuCtrl.close('main-menu');
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error cerrando sesión:', error);
+    }
+  }
+
+  goHome() {
+    this.router.navigate(['/home']);
   }
 
   cambiarVista(event: any) {

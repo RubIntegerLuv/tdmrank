@@ -1,10 +1,42 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Ranking</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-menu
+  side="end"
+  menuId="main-menu"
+  contentId="main-content"
+  class="custom-menu"
+  type="overlay"
+  swipeToClose="true"
+>
+  <ion-header>
+    <ion-toolbar color="#67092B">
+      <ion-title>Menú</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'administrador'" (click)="createTourtnament()">
+        Crear Torneo
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'arbitro'" (click)="createMatch()">
+        Crear Partido
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="joinMatch()">
+        Unirse a Partido
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador' || usuario?.tipoUsuario === 'arbitro' || usuario?.tipoUsuario === 'administrador'" (click)="joinTournament()">
+        Unirse a Torneo
+      </ion-item>
+      <ion-item button *ngIf="usuario?.tipoUsuario === 'jugador'" (click)="goToPerfil()">
+        Perfil
+      </ion-item>
+      <ion-item button (click)="logout()">
+        Cerrar Sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
-<ion-content [fullscreen]="true" class="ranking-content">
+<ion-content id="main-content" [fullscreen]="true" class="ranking-content">
+<app-header></app-header>
   <div class="ranking-container">
     <div class="ranking-card">
       <h2 class="ranking-titulo">Ranking de Jugadores</h2>

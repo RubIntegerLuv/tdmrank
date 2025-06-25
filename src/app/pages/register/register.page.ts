@@ -52,6 +52,7 @@ export class RegisterPage implements OnInit {
     this.authService.register({ nombre, apellido, email, tipoUsuario }, password)
       .then(async () => {
         await loading.dismiss();
+        this.presentToast('Usuario registrado exitosamente.');
         this.router.navigate(['/login']);
       })
       .catch(async (err) => {

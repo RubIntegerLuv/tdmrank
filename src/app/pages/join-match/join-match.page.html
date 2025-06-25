@@ -23,30 +23,36 @@
   </ion-content>
 </ion-menu>
 
-<ion-content>
+<ion-content id="main-content">
   <app-header></app-header>
-  <div class="content-container">
-    <div class="form-container">
-      <ion-item lines="none" class="custom-input">
-        <ion-input
-          type="text"
-          placeholder="Código del partido"
-          [(ngModel)]="codigoPartido"
-        ></ion-input>
-      </ion-item>
-      <ion-button expand="block" (click)="unirseAPartido()">
-        Unirse al partido
-      </ion-button>
-      <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
-    </div>
-    <div *ngIf="partidoEncontrado">
-      <h2>Esperando a que el árbitro inicie el partido...</h2>
-      <ion-list>
-        <ion-list-header>Jugadores conectados</ion-list-header>
-        <ion-item *ngFor="let jugador of jugadores">
-          {{ jugador.nombre }}
+  <div class="center-wrapper">
+    <div class="content-container">
+      <div class="form-container">
+        <div class="branding">
+          <h1>Únete al Partido</h1>
+          <p>Ingresa el código entregado por el árbitro</p>
+        </div>
+        <ion-item lines="none" class="custom-input">
+          <ion-input
+            type="text"
+            placeholder="Código del partido"
+            [(ngModel)]="codigoPartido"
+          ></ion-input>
         </ion-item>
-      </ion-list>
+        <ion-button expand="block" (click)="unirseAPartido()">
+          Unirse al partido
+        </ion-button>
+        <ion-text color="danger" *ngIf="errorMsg">{{ errorMsg }}</ion-text>
+      </div>
+      <div class="from-container" *ngIf="partidoEncontrado">
+        <h2>Esperando a que el árbitro inicie el partido...</h2>
+        <ion-list>
+          <ion-list-header>Jugadores conectados</ion-list-header>
+          <ion-item *ngFor="let jugador of jugadores">
+            {{ jugador.nombre }}
+          </ion-item>
+        </ion-list>
+      </div>
     </div>
   </div>
 </ion-content>

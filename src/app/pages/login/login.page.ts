@@ -51,15 +51,18 @@ export class LoginPage implements OnInit {
       this.router.navigate(['/home']);
     } catch (err: any) {
       await loading.dismiss();
+      console.error('Login error', err);
+
       let message = 'Error desconocido. Intenta nuevamente.';
-      if (err.code === 'auth/user-not-found') {
-        message = 'El usuario no existe.';
-      } else if (err.code === 'auth/wrong-password') {
-        message = 'Contraseña incorrecta.';
-      } else if (err.code === 'auth/invalid-email') {
-        message = 'El email no es válido.';
+       if (
+        err.code === 'auth/user-not-found' ||
+        err.code === 'auth/invalid-credential'
+      ) {
+        message = 'Correo o contraseña inválidos.';
       } else if (err.code === 'auth/too-many-requests') {
         message = 'Demasiados intentos. Intenta más tarde.';
+      } else if (err.message?.includes('INVALID_LOGIN_CREDENTIALS')) {
+        message = 'Correo o contraseña inválidos.';
       }
       this.presentToast(message);
     }
@@ -77,5 +80,9 @@ export class LoginPage implements OnInit {
 
   RegisterPage() {
     this.router.navigate(['/register']);
+  }
+
+  ionViewWillEnter() {
+    this.loginForm.reset();
   }
 }

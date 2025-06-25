@@ -37,9 +37,11 @@
       <ion-button expand="block" class="login-button" type="submit" [disabled]="loginForm.invalid">
         Ingresar
       </ion-button>
-      <ion-button expand="block" class="login-button" type="button" (click)="RegisterPage()">
-        ¿No tienes cuenta? Regístrate
-      </ion-button>
+      <div style="text-align: center; margin-top: 16px;">
+        <a routerLink="/register" style="color: #3880ff; text-decoration: underline; font-size: 15px;">
+          ¿No tienes cuenta? Registrate
+        </a>
+      </div>
     </form>
 
   </div>

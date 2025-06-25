@@ -50,11 +50,11 @@
         <ion-item *ngFor="let arbitro of arbitros">
           {{ arbitro.nombre }} {{ arbitro.apellido }}
         </ion-item>
-      </ion-list>
-      <ion-text color="warning" *ngIf="esperando">
+      </ion-list> <br> <br>
+      <ion-text color= #A20E43 *ngIf="esperando">
         Esperando a que se unan al menos 4 jugadores y al menos 1 árbitro...
       </ion-text>
-      <ion-button expand="block" color="success" (click)="iniciarTorneo()" [disabled]="esperando">
+      <ion-button class="crear-torneo" expand="block" (click)="iniciarTorneo()" [disabled]="esperando">
         Iniciar Torneo
       </ion-button>
     </div>

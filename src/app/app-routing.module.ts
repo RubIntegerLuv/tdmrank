@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { TorneoPage } from './pages/torneo/torneo.page';
 import { TorneoPageModule } from './pages/torneo/torneo.module';
+import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
   {
@@ -23,32 +24,39 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'create-match',
-    loadChildren: () => import('./pages/create-match/create-match.module').then( m => m.CreateMatchPageModule)
+    loadChildren: () => import('./pages/create-match/create-match.module').then( m => m.CreateMatchPageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'join-match',
-    loadChildren: () => import('./pages/join-match/join-match.module').then( m => m.JoinMatchPageModule)
+    loadChildren: () => import('./pages/join-match/join-match.module').then( m => m.JoinMatchPageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'partido/:id',
-    loadChildren: () => import('./pages/partido/partido.module').then( m => m.PartidoPageModule)
+    loadChildren: () => import('./pages/partido/partido.module').then( m => m.PartidoPageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'perfil',
-    loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule)
+    loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule),
+    // canActivate: [AuthGuard]
   },
   {
     path: 'join-tournament',
-    loadChildren: () => import('./pages/join-tournament/join-tournament.module').then( m => m.JoinTournamentPageModule)
+    loadChildren: () => import('./pages/join-tournament/join-tournament.module').then( m => m.JoinTournamentPageModule),
+    // canActivate: [AuthGuard]
   },
 
     {
       path: 'torneo/:uid',
       component: TorneoPage,
+      canActivate: [AuthGuard],
       children: [
         {
           path: 'mis-partidos',
@@ -74,7 +82,8 @@ const routes: Routes = [
     },
   {
     path: 'ranking',
-    loadChildren: () => import('./pages/ranking/ranking.module').then( m => m.RankingPageModule)
+    loadChildren: () => import('./pages/ranking/ranking.module').then( m => m.RankingPageModule),
+    canActivate: [AuthGuard]
   },
 
 ];
