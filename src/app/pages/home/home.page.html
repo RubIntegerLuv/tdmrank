@@ -40,29 +40,27 @@
 
 <ion-content id="main-content">
   <app-header></app-header>
-  <div class="content-container">
+    <div class="content-container">
       <div class="info-box">
-        <!-- Aquí puedes agregar el top 5 del ranking -->
-          <h2 class="ranking-titulo">Top 5 Ranking</h2>
-          <table class="ranking-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Jugador</th>
-                <th>Ganados</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let jugador of ranking.slice(0,5); let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ jugador.nombre }} {{ jugador.apellido }}</td>
-                <td>{{ jugador.partidosGanados }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div *ngIf="ranking.length === 0" class="ranking-vacio">
-            No hay jugadores registrados.
-          </div>
+        <h2 class="ranking-titulo">Top 5 Ranking</h2>
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Jugador</th>
+              <th>Ganados</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let jugador of ranking.slice(0,5); let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ jugador.nombre }} {{ jugador.apellido }}</td>
+              <td>{{ jugador.partidosGanados }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="ranking.length === 0" class="ranking-vacio">
+          No hay jugadores registrados.
         </div>
       </div>
       <div class="info-box">
@@ -73,18 +71,46 @@
         <ion-card *ngFor="let partido of partidosEnVivo">
           <ion-card-header>
             <ion-card-title>
-              {{ partido.jugadores?.[0]?.nombre || 'Jugador 1' }}
+              {{ partido.jugadores?.[0]?.nombre }} {{ partido.jugadores?.[0]?.apellido || 'Jugador 1' }}
               vs
-              {{ partido.jugadores?.[1]?.nombre || 'Jugador 2' }}
+              {{ partido.jugadores?.[1]?.nombre }} {{ partido.jugadores?.[1]?.apellido || 'Jugador 2' }}
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <p><strong>Sets:</strong> {{ partido.setsGanados?.[0] || 0 }} - {{ partido.setsGanados?.[1] || 0 }}</p>
             <p><strong>Puntos:</strong> {{ partido.puntosActuales?.[0] || 0 }} - {{ partido.puntosActuales?.[1] || 0 }}</p>
             <ion-button (click)="verPartidoComoEspectador(partido.id)" expand="block" color="primary">
-              Ver
+              Ver en vivo
             </ion-button>
           </ion-card-content>
         </ion-card>
       </div>
+      <div class="info-box">
+        <h2>Torneos</h2>
+        <ion-card *ngIf="torneos.length === 0">
+          <ion-card-content>No hay torneos activos ni finalizados.</ion-card-content>
+        </ion-card>
+        <ion-card *ngFor="let torneo of torneos">
+          <ion-card-header>
+            <ion-card-title>
+              {{ torneo.nombre }}
+              <ion-badge *ngIf="torneo.estado === 'en_juego'" color="success" style="margin-left:8px;">En vivo</ion-badge>
+              <ion-badge *ngIf="torneo.estado === 'finalizado'" color="medium" style="margin-left:8px;">Finalizado</ion-badge>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div *ngIf="torneo.estado === 'en_juego'">
+              <ion-button expand="block" color="primary" (click)="verTorneoEnVivo(torneo.id)">
+                Ver en vivo
+              </ion-button>
+            </div>
+            <div *ngIf="torneo.estado === 'finalizado'">
+              <ion-button expand="block" color="medium" (click)="verResumenTorneo(torneo.id)">
+                Ver resumen
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
 </ion-content>

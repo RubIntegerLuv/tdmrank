@@ -25,32 +25,32 @@ const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./pages/home/home.module').then( m => m.HomePageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'create-match',
     loadChildren: () => import('./pages/create-match/create-match.module').then( m => m.CreateMatchPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'join-match',
     loadChildren: () => import('./pages/join-match/join-match.module').then( m => m.JoinMatchPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'partido/:id',
     loadChildren: () => import('./pages/partido/partido.module').then( m => m.PartidoPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'perfil',
     loadChildren: () => import('./pages/perfil/perfil.module').then(m => m.PerfilPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
   {
     path: 'join-tournament',
     loadChildren: () => import('./pages/join-tournament/join-tournament.module').then( m => m.JoinTournamentPageModule),
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   },
 
     {

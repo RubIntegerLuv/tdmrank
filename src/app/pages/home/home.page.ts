@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, } from '../../services/auth.service';
 import { MenuController } from '@ionic/angular';
-import { collection, getDocs, Firestore, onSnapshot, query, where, } from '@angular/fire/firestore';
+import { collection, getDocs, Firestore, onSnapshot, query, where, orderBy } from '@angular/fire/firestore';
 import { LoadingController, ToastController } from '@ionic/angular';
 
 
@@ -27,6 +27,7 @@ export class HomePage implements OnInit {
   top5Ranking: any[] = [];
   ranking: any[] = [];
   partidosEnVivo: any[] = [];
+  torneos : any[] = [];
 
 
   constructor(private router: Router,
@@ -41,7 +42,8 @@ export class HomePage implements OnInit {
     this.usuario = await this.authService.getCurrentUserData();
     await this.cargarRankingJugadores();
     this.top5Ranking = this.rankingJugadores.slice(0, 5);
-    this.escucharPartidosEnVivo(); // <- Llamamos a la función nueva
+    this.escucharPartidosEnVivo();
+    this.escucharTorneos();
   }
 
   escucharPartidosEnVivo() {
@@ -56,10 +58,36 @@ export class HomePage implements OnInit {
     });
   }
 
+  escucharTorneos() {
+    const torneosRef = collection(this.firestore, 'torneos');
+    // Escucha torneos en juego o finalizados, ordenados por fecha de creación descendente
+    const q = query(torneosRef, where('estado', 'in', ['en_juego', 'finalizado']), orderBy('creadoEn', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      this.torneos = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+    });
+  }
+
   verPartidoComoEspectador(partidoId: string) {
     sessionStorage.setItem('rolTemporal', this.usuario.tipoUsuario); // Guardamos el rol original
     this.router.navigate(['/partido', partidoId]);
   }
+
+  verResumenTorneo(torneoId: string) {
+    sessionStorage.setItem('rolTemporal', this.usuario.tipoUsuario);
+    sessionStorage.setItem('modoEspectador', 'true');
+    this.router.navigate(['/torneo', torneoId, 'resumen']);
+  }
+
+  verTorneoEnVivo(torneoId: string) {
+    sessionStorage.setItem('rolTemporal', this.usuario.tipoUsuario);
+    sessionStorage.setItem('modoEspectador', 'true');
+    this.router.navigate(['/torneo', torneoId, 'resumen']);
+  }
+
+
 
   async logout() {
     try {
