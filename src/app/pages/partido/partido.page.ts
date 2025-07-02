@@ -3,8 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Firestore, doc, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { User } from '../../models/user.model';
-import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-partido',
@@ -26,14 +24,14 @@ export class PartidoPage implements OnInit {
   emptySets: any[][] = [[], []];
   historial: any[] = [];
 
+
   private cambioLadoDecisivoRealizado: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private firestore: Firestore,
     private authService: AuthService,
-    private router: Router,
-    private menuCtrl: MenuController
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -102,8 +100,7 @@ export class PartidoPage implements OnInit {
   async actualizarPuntos(puntos: number[], accion: any = null, esDeshacer = false) {
     let setsGanados = [...this.setsGanados];
     let lado = [...this.lado];
-    let ganador: string | null = null;
-    let ganadorUid: string | null = null;
+    let ganador: any = null;
     let historial = [...this.historial];
 
     const maxPuntos = 11;
@@ -140,13 +137,18 @@ export class PartidoPage implements OnInit {
 
     // ¿Alguien ganó el partido?
     const setsParaGanar = Math.floor(this.cantidadSets / 2) + 1;
-    if (setsGanados[0] === setsParaGanar) {
-      ganador = this.jugadores[lado[0]].nombre || this.jugadores[lado[0]].apellido
-      ganadorUid = this.jugadores[lado[0]].uid;
-    }
-    if (setsGanados[1] === setsParaGanar) {
-      ganador = this.jugadores[lado[1]].nombre || this.jugadores[lado[1]].apellido;
-      ganadorUid = this.jugadores[lado[1]].uid;
+      if (setsGanados[0] === setsParaGanar) {
+      ganador = {
+        nombre: this.jugadores[0].nombre,
+        apellido: this.jugadores[0].apellido,
+        uid: this.jugadores[0].uid
+      };
+    } else if (setsGanados[1] === setsParaGanar) {
+      ganador = {
+        nombre: this.jugadores[1].nombre,
+        apellido: this.jugadores[1].apellido,
+        uid: this.jugadores[1].uid
+      };
     }
 
     // Historial para deshacer
@@ -162,10 +164,14 @@ export class PartidoPage implements OnInit {
       puntosActuales: puntos,
       setsGanados: setsGanados,
       lado: lado,
-      ganador: ganador,
-      ganadorUid: ganadorUid,
+      ganador: ganador || { nombre: 'Por definir', apellido: '', uid: null },
       historial: historial
     });
+
+    this.setsGanados = setsGanados;
+    this.puntosActuales = puntos;
+    this.lado = lado;
+    this.ganador = ganador;
   }
 
   async finalizarPartido() {

@@ -24,6 +24,7 @@ interface Grupo {
   standalone: false
 })
 export class CreateTourtnamentPage implements OnInit, OnDestroy {
+  usuario: any;
   nombreTorneo: string = '';
   fechaTorneo: string = '';
   creando: boolean = false;
@@ -39,10 +40,11 @@ export class CreateTourtnamentPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private menuCtrl: MenuController
   ) {}
 
-  ngOnInit() {}
+  async ngOnInit() {
+    this.usuario = await this.authService.getCurrentUserData();
+  }
 
   generarCodigo(): string {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -187,21 +189,6 @@ export class CreateTourtnamentPage implements OnInit, OnDestroy {
   copiarCodigo() {
     navigator.clipboard.writeText(this.codigoTorneo);
   }
-
-  async logout() {
-    try {
-      await this.authService.logout();
-      await this.menuCtrl.close('main-menu');
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Error cerrando sesión:', error);
-    }
-  }
-
-  goHome() {
-    this.router.navigate(['/home']);
-  }
-
   ngOnDestroy() {
     if (this.unsubscribeTorneo) {
       this.unsubscribeTorneo();

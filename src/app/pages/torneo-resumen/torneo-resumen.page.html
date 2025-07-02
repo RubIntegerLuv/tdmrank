@@ -6,11 +6,15 @@
     </ion-button>
   </div>
 
-  <!-- Mostrar fase actual -->
-  <div *ngIf="torneo?.faseActual" style="text-align:center; margin-bottom: 12px;">
-    <ion-chip color="primary">
-      Fase actual: {{ torneo?.faseActual | titlecase }}
-    </ion-chip>
+  <!-- Mostrar mensaje de torneo finalizado y el ganador -->
+  <div *ngIf="torneo?.estado === 'finalizado'" style="text-align:center; margin: 16px 0;">
+    <h2>¡Torneo Finalizado!</h2>
+    <div *ngIf="torneo?.ganador; else sinGanador">
+      <b>Ganador del Torneo:</b> {{ torneo?.ganador?.nombre || '' }} {{ torneo?.ganador?.apellido || '' }}
+    </div>
+    <ng-template #sinGanador>
+      <b>Ganador del Torneo:</b> Por definir
+    </ng-template>
   </div>
 
   <!-- Fases de eliminación directa (final, semi, cuartos, etc.) -->
@@ -29,11 +33,11 @@
           </ion-card-subtitle>
         </ion-card-header>
         <ion-card-content>
-          <div *ngIf="partido.ganador">
+          <div *ngIf="partido.ganador && partido.ganador.nombre !== 'Por definir'">
             <b>Ganador:</b> {{ partido.ganador.nombre }} {{ partido.ganador.apellido }}
           </div>
-          <div *ngIf="!partido.ganador">
-            <b>Por definir</b>
+          <div *ngIf="!partido.ganador || partido.ganador.nombre === 'Por definir'">
+            <b>Ganador:</b> Por definir
           </div>
           <div *ngIf="partido.arbitro">
             <b>Árbitro:</b> {{ partido.arbitro.nombre }} {{ partido.arbitro.apellido }}

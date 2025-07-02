@@ -1,3 +1,30 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <!-- Menú global -->
+  <ion-menu
+    side="end"
+    menuId="main-menu"
+    contentId="main-content"
+    class="custom-menu"
+    type="overlay"
+    swipeToClose="true"
+  >
+    <ion-header>
+      <ion-toolbar color="#67092B">
+        <ion-title>Menú</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <!-- Elementos dinámicos del menú -->
+        <ng-container *ngFor="let item of menuItems">
+          <ion-item button (click)="item.action()">
+            {{ item.label }}
+          </ion-item>
+        </ng-container>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Contenido principal -->
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

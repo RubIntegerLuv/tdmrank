@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, updateDoc, onSnapshot } from '@angular/fire/firestore';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
 import { User } from '../../models/user.model';
 
 @Component({
@@ -28,7 +27,6 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
   constructor(
     private firestore: Firestore,
     private authService: AuthService,
-    private menuCtrl: MenuController,
     private router: Router
   ) {}
 
@@ -150,18 +148,5 @@ export class JoinTournamentPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.unsubscribe) this.unsubscribe();
-  }
-
-  async logout() {
-    try {
-      await this.authService.logout();
-      await this.menuCtrl.close('main-menu');
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Error cerrando sesión:', error);
-    }
-  }
-  goHome() {
-    this.router.navigate(['/home']);
   }
 }

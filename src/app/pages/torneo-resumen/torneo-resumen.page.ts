@@ -144,37 +144,51 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
     arbitros: any[]
   ) {
     let arbitroIndex = 0;
-    for (const pareja of emparejamientos) {
-      await addDoc(collection(this.firestore, 'partidos'), {
-        torneoId: this.torneoId,
-        jugadores: pareja,
-        arbitro: arbitros.length > 0 ? arbitros[arbitroIndex++ % arbitros.length] : null,
-        estado: 'esperando',
-        setsGanados: [0, 0],
-        puntosActuales: [0, 0],
-        lado: [0, 1],
-        ganador: null,
-        creadoEn: new Date(),
-        fase
-      });
+    const partidosIds: string[] = []; // Lista para almacenar los IDs de los partidos
+
+  for (const pareja of emparejamientos) {
+    const partidoRef = await addDoc(collection(this.firestore, 'partidos'), {
+      torneoId: this.torneoId,
+      jugadores: pareja,
+      arbitro: arbitros.length > 0 ? arbitros[arbitroIndex++ % arbitros.length] : null,
+      estado: 'esperando',
+      setsGanados: [0, 0],
+      puntosActuales: [0, 0],
+      lado: [0, 1],
+      ganador: null,
+      creadoEn: new Date(),
+      fase
+    });
+
+      partidosIds.push(partidoRef.id); // Agregar el ID del partido a la lista
     }
-    // Actualiza la fase actual del torneo
-    await updateDoc(doc(this.firestore, 'torneos', this.torneoId), {
+
+    // Actualiza el documento del torneo con los IDs de los partidos
+    const torneoDoc = doc(this.firestore, 'torneos', this.torneoId);
+    await updateDoc(torneoDoc, {
       estado: 'en_juego',
-      faseActual: fase
+      faseActual: fase,
+      [`partidos.${fase}`]: partidosIds // Guardar los IDs de los partidos por fase
     });
   }
 
   async crearSiguienteFase() {
     const arbitros = this.torneo?.arbitros || [];
+    console.log('Arbitros disponibles:', arbitros);
+
     // 1. Obtener todos los grupos y sus partidos
     const grupos = this.grupos;
+    console.log('Grupos detectados:', grupos);
+
     const partidosGrupo = this.partidos.filter(p => p.fase === 'grupo');
+    console.log('Partidos de grupo:', partidosGrupo);
 
     // 2. Para cada grupo, calcular la tabla de posiciones
     const clasificadosPorGrupo: { primero: any, segundo: any }[] = [];
     for (const grupo of grupos) {
       const partidosDelGrupo = partidosGrupo.filter(p => p.grupo === grupo);
+      console.log(`Partidos del grupo ${grupo}:`, partidosDelGrupo);
+
       const jugadoresGrupo: { [uid: string]: { jugador: any, sets: number, partidosGanados: number } } = {};
 
       partidosDelGrupo.forEach(p => {
@@ -200,6 +214,8 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
         return b.partidosGanados - a.partidosGanados;
       });
 
+      console.log(`Jugadores ordenados en el grupo ${grupo}:`, ordenados);
+
       if (ordenados.length >= 2) {
         clasificadosPorGrupo.push({
           primero: ordenados[0].jugador,
@@ -207,6 +223,8 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
         });
       }
     }
+
+    console.log('Clasificados por grupo:', clasificadosPorGrupo);
 
     // 3. Emparejar cruzado
     const emparejamientos: any[][] = [];
@@ -222,29 +240,81 @@ export class TorneoResumenPage implements OnInit, OnDestroy {
       }
       nuevaFase = emparejamientos.length === 4 ? 'cuartos' : (emparejamientos.length === 2 ? 'semifinal' : 'final');
     } else {
+      console.error('No hay suficientes clasificados para crear la siguiente fase.');
       return;
     }
 
+    console.log('Emparejamientos para la nueva fase:', emparejamientos);
+    console.log('Nueva fase:', nuevaFase);
+
     // 4. Crear partidos de la siguiente fase si no existen
     const yaExisten = this.partidos.some(p => p.fase === nuevaFase);
+    console.log(`¿Ya existen partidos de la fase ${nuevaFase}?:`, yaExisten);
+
     if (!yaExisten) {
       await this.crearPartidosFase(nuevaFase, emparejamientos, arbitros);
+      console.log(`Partidos de la fase ${nuevaFase} creados con éxito.`);
       return;
     }
 
     // 5. Si ya hay semifinales y están finalizadas, crea la final (solo si no existe)
     if (nuevaFase === 'semifinal') {
       const semis = this.partidos.filter(p => p.fase === 'semifinal');
+      console.log('Partidos de semifinal:', semis);
+
       const semisFinalizadas = semis.length === 2 && semis.every(p => p.estado === 'finalizado' && p.ganador);
+      console.log('¿Semifinales finalizadas?:', semisFinalizadas);
+
       const yaHayFinal = this.partidos.some(p => p.fase === 'final');
+      console.log('¿Ya existe la final?:', yaHayFinal);
+
       if (semisFinalizadas && !yaHayFinal) {
-        const ganadoresSemis = semis.map(p => p.ganador)
-          .filter((g, i, arr) => g && arr.findIndex(x => x && x.uid === g.uid) === i);
+        const ganadoresSemis = semis
+          .map(p => p.ganador)
+          .filter((g): g is Jugador => g !== null && g !== undefined && typeof g.uid === 'string')
+          .reduce((acc: Jugador[], ganador) => {
+            if (!acc.some(g => g.uid === ganador.uid)) {
+              acc.push(ganador);
+            }
+            return acc;
+          }, []);
+
+        console.log('Ganadores únicos de semifinales:', ganadoresSemis);
+
         if (ganadoresSemis.length === 2) {
           await this.crearPartidosFase('final', [ganadoresSemis], arbitros);
+          console.log('Final creada con éxito.');
+        } else {
+          console.error('No se encontraron dos ganadores únicos en las semifinales.');
         }
+      } else {
+        console.error('No se puede crear la final: semifinales no finalizadas o ya existe la final.');
       }
       return;
     }
   }
+
+  async finalizarTorneo() {
+    if (!this.torneoId || !this.torneo) return;
+
+    // Buscar el partido de la final que esté finalizado
+    const finalPartido = this.partidos.find(p => p.fase === 'final' && p.estado === 'finalizado');
+    if (!finalPartido || !finalPartido.ganador) {
+      console.error('No se puede finalizar el torneo porque no hay un ganador definido en la final.');
+      return;
+    }
+
+    const torneoDoc = doc(this.firestore, 'torneos', this.torneoId);
+    try {
+      await updateDoc(torneoDoc, {
+        estado: 'finalizado',
+        finalizadoEn: new Date(),
+        ganador: finalPartido.ganador // Guardar directamente el ganador del partido de la final
+      });
+      console.log('Torneo finalizado correctamente, ganador:', finalPartido.ganador);
+    } catch (error) {
+      console.error('Error al finalizar el torneo:', error);
+    }
+  }
 }
+

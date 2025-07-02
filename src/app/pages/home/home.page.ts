@@ -40,6 +40,7 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     this.usuario = await this.authService.getCurrentUserData();
+    await this.menuCtrl.enable(true, 'main-menu');
     await this.cargarRankingJugadores();
     this.top5Ranking = this.rankingJugadores.slice(0, 5);
     this.escucharPartidosEnVivo();
@@ -99,10 +100,12 @@ export class HomePage implements OnInit {
       console.error('Error cerrando sesión:', error);
     }
   }
-  createTourtnament() {
+  async createTourtnament() {
+    await this.menuCtrl.close();
     this.router.navigate(['/create-tourtnament']);
   }
-  createMatch() {
+  async createMatch() {
+    await this.menuCtrl.close();
     this.router.navigate(['/create-match']);
   }
   joinMatch() {

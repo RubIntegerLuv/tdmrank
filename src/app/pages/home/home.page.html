@@ -1,7 +1,7 @@
 <ion-menu
   side="end"
-  menuId="main-menu"
-  contentId="main-content"
+  menuId="home-main-menu"
+  contentId="home-main-content"
   class="custom-menu"
   type="overlay"
   swipeToClose="true"
@@ -38,7 +38,7 @@
   </ion-content>
 </ion-menu>
 
-<ion-content id="main-content">
+<ion-content id="home-main-content">
   <app-header></app-header>
     <div class="content-container">
       <div class="info-box">
@@ -94,7 +94,7 @@
           <ion-card-header>
             <ion-card-title>
               {{ torneo.nombre }}
-              <ion-badge *ngIf="torneo.estado === 'en_juego'" color="success" style="margin-left:8px;">En vivo</ion-badge>
+              <ion-badge *ngIf="torneo.estado === 'en_juego'" color="red" style="margin-left:8px;">En vivo</ion-badge>
               <ion-badge *ngIf="torneo.estado === 'finalizado'" color="medium" style="margin-left:8px;">Finalizado</ion-badge>
             </ion-card-title>
           </ion-card-header>

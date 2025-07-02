@@ -3,7 +3,6 @@ import { AuthService } from '../../services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Firestore, collection, addDoc, doc, updateDoc, onSnapshot, getDoc, query, where, getDocs } from '@angular/fire/firestore';
 import { inject } from '@angular/core';
-import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-create-match',
@@ -27,7 +26,6 @@ export class CreateMatchPage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private menuCtrl: MenuController
   ) {}
 
   async ngOnInit() {
@@ -102,19 +100,5 @@ export class CreateMatchPage implements OnInit {
     const partidoDoc = doc(this.firestore, `partidos/${this.partidoId}`);
     await updateDoc(partidoDoc, { estado: 'en_juego' });
     this.router.navigate(['/partido', this.partidoId]);
-  }
-
-  async logout() {
-    try {
-      await this.authService.logout();
-      await this.menuCtrl.close('main-menu');
-      this.router.navigate(['/login']);
-    } catch (error) {
-      console.error('Error cerrando sesión:', error);
-    }
-  }
-
-  goHome() {
-    this.router.navigate(['/home']);
   }
 }
